@@ -1,0 +1,2 @@
+GET        /count          controllers.CountController.count
+GET        /message        controllers.AsyncController.message
