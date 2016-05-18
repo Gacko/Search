@@ -13,7 +13,7 @@
     </appender>
 
     <logger name="play" level="INFO"/>
-    <logger name="application" level="INFO"/>
+    <logger name="application" level="DEBUG"/>
 
     <root level="WARN">
         <appender-ref ref="ASYNCSTDOUT"/>
