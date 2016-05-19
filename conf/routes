@@ -1,0 +1,4 @@
+# Tag
+POST          /tags             controllers.TagController.index
+POST          /tags/bulk        controllers.TagController.bulk
+DELETE        /tags/:id         controllers.TagController.delete(id)
