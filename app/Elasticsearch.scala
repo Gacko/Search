@@ -28,7 +28,7 @@ sealed class StartStop @Inject()(lifecycle: ApplicationLifecycle, client: Client
 
 }
 
-class Elasticsearch(environment: Environment, configuration: Configuration) extends AbstractModule {
+final class Elasticsearch(environment: Environment, configuration: Configuration) extends AbstractModule {
 
   /**
     * Creates an instance of Client for Elasticsearch operations.
