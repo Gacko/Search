@@ -8,7 +8,6 @@ import scala.language.implicitConversions
 /**
   * Marco Ebert 18.05.16
   */
-
 object Helpers {
 
   /**
