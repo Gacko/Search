@@ -9,9 +9,33 @@ import scala.concurrent.ExecutionContext.Implicits.global
 /**
   * Marco Ebert 20.05.16
   */
-abstract class AbstractController extends Controller {
+abstract class AbstractController[E] extends Controller {
 
-  protected def service: AbstractService
+  protected def service: AbstractService[E]
+
+  /**
+    * Indexes a sequence of entities.
+    *
+    * @return Index status.
+    */
+  def index = Action.async(parse.json[Seq[E]]) { request =>
+    val entities = request.body
+    service.index(entities).map { indexed =>
+      Ok(Json.obj("indexed" -> indexed))
+    }
+  }
+
+  /**
+    * Deletes a document by ID.
+    *
+    * @param id Document ID.
+    * @return Deletion status.
+    */
+  def delete(id: String) = Action.async {
+    service.delete(id).map { deleted =>
+      Ok(Json.obj("deleted" -> deleted))
+    }
+  }
 
   /**
     * Creates the index.
