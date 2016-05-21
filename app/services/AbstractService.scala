@@ -30,7 +30,10 @@ abstract class AbstractService[E](`type`: String)(implicit val format: Format[E]
     for (entity <- entities) {
       val json = Json.toJson(entity)
       val source = Json.stringify(json)
-      val request = client.prepareIndex(Index.Name, `type`, source)
+
+      val request = client.prepareIndex(Index.Name, `type`)
+      request.setSource(source)
+
       bulk.add(request)
     }
 
