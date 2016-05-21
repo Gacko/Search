@@ -19,7 +19,7 @@ abstract class AbstractIndexService {
   protected def settings: String
 
   /**
-    * Creates the tag index.
+    * Creates the index.
     *
     * @return
     */
@@ -31,7 +31,7 @@ abstract class AbstractIndexService {
   }
 
   /**
-    * Deletes the tag index.
+    * Deletes the index.
     *
     * @return
     */
@@ -42,7 +42,7 @@ abstract class AbstractIndexService {
   }
 
   /**
-    * Checks if the tag index exists.
+    * Checks if the index exists.
     *
     * @return
     */
