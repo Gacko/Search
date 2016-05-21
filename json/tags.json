@@ -1,14 +1,12 @@
-{
-  "tags": [
-    {
-      "id": 1,
-      "post": 2,
-      "text": "Kadse"
-    },
-    {
-      "id": 2,
-      "post": 1,
-      "text": "Bellkadse"
-    }
-  ]
-}
+[
+  {
+    "id": 1,
+    "post": 2,
+    "text": "Kadse"
+  },
+  {
+    "id": 2,
+    "post": 2,
+    "text": "Bellkadse"
+  }
+]

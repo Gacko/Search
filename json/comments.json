@@ -1,0 +1,12 @@
+[
+  {
+    "id": 1,
+    "post": 2,
+    "text": "Das ist ein Kommentar."
+  },
+  {
+    "id": 2,
+    "post": 2,
+    "text": "Das ist ein weiterer Kommentar."
+  }
+]
