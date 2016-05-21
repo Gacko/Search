@@ -2,16 +2,14 @@ package controllers
 
 import play.api.libs.json.Json
 import play.api.mvc.{Action, Controller}
-import services.AbstractIndexService
-
-import scala.concurrent.ExecutionContext.Implicits.global
+import services.AbstractService
 
 /**
   * Marco Ebert 20.05.16
   */
-abstract class AbstractIndexController extends Controller {
+abstract class AbstractController extends Controller {
 
-  protected def service: AbstractIndexService
+  protected def service: AbstractService
 
   /**
     * Creates the index.
@@ -25,13 +23,13 @@ abstract class AbstractIndexController extends Controller {
   }
 
   /**
-    * Deletes the index.
+    * Drops the index.
     *
     * @return
     */
-  def delete = Action.async {
-    service.delete.map { deleted =>
-      Ok(Json.obj("deleted" -> deleted))
+  def drop = Action.async {
+    service.drop.map { dropped =>
+      Ok(Json.obj("dropped" -> dropped))
     }
   }
 

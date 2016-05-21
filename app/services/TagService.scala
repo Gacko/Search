@@ -1,6 +1,6 @@
 package services
 
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 
 import org.elasticsearch.client.Client
 import play.api.libs.json.Json
@@ -8,7 +8,8 @@ import play.api.libs.json.Json
 /**
   * Marco Ebert 20.05.16
   */
-final class TagIndexService @Inject()(override val client: Client) extends AbstractIndexService("tags") {
+@Singleton
+final class TagService @Inject()(override val client: Client) extends AbstractService("tags") {
 
   override protected val settings: String = {
     Json.stringify(
