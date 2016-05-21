@@ -5,7 +5,7 @@ import play.api.libs.json.Json
 /**
   * Marco Ebert 19.05.16
   */
-case class Tag(id: Int, post: Int, text: String)
+case class Tag(override val id: Int, post: Int, text: String) extends Entity
 
 object Tag {
 
