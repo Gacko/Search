@@ -3,6 +3,7 @@ package services
 import org.elasticsearch.client.Client
 import util.Helpers._
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 /**

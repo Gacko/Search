@@ -4,6 +4,8 @@ import play.api.libs.json.Json
 import play.api.mvc.{Action, Controller}
 import services.AbstractService
 
+import scala.concurrent.ExecutionContext.Implicits.global
+
 /**
   * Marco Ebert 20.05.16
   */

@@ -7,6 +7,7 @@ import play.api.libs.json.Json
 import play.api.mvc.Action
 import services.TagService
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 /**
