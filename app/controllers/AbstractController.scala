@@ -10,9 +10,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 /**
   * Marco Ebert 20.05.16
   */
-abstract class AbstractController[E <: Entity](implicit val format: Format[E]) extends Controller {
-
-  protected def service: AbstractService[E]
+abstract class AbstractController[E <: Entity](service: AbstractService[E])(implicit val format: Format[E]) extends Controller {
 
   /**
     * Indexes multiple entities.

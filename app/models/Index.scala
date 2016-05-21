@@ -1,25 +1,29 @@
 package models
 
+import javax.inject.{Inject, Singleton}
+
+import play.api.Configuration
 import play.api.libs.json.Json
 
 /**
   * Marco Ebert 21.05.16
   */
-object Index {
+@Singleton
+class Index @Inject()(configuration: Configuration) {
 
   /**
     * Index name.
     */
-  val Name = "content"
+  val name = "content"
 
   /**
     * Index settings.
     */
-  val Settings = Json.stringify(
+  val settings = Json.stringify(
     Json.obj(
-      "settings" -> Json.obj(
-        "number_of_replicas" -> 0,
-        "number_of_shards" -> 4
+      "index" -> Json.obj(
+        "number_of_shards" -> configuration.getInt("index.shards"),
+        "number_of_replicas" -> configuration.getInt("index.replicas")
       ),
       "analysis" -> Json.obj(
         "analyzer" -> Json.obj(
@@ -36,7 +40,7 @@ object Index {
   /**
     * Index mappings.
     */
-  val Mappings = Map(
+  val mappings = Map(
     Tag.Type -> Tag.Mapping,
     Comment.Type -> Comment.Mapping
   )

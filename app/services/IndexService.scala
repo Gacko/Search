@@ -13,7 +13,7 @@ import scala.concurrent.Future
   * Marco Ebert 21.05.16
   */
 @Singleton
-final class IndexService @Inject()(client: Client) {
+final class IndexService @Inject()(client: Client, index: Index) {
 
   /**
     * Creates the index.
@@ -21,10 +21,10 @@ final class IndexService @Inject()(client: Client) {
     * @return If the creation has been acknowledged.
     */
   def create: Future[Boolean] = {
-    val request = client.admin().indices().prepareCreate(Index.Name)
-    request.setSettings(Index.Settings)
+    val request = client.admin().indices().prepareCreate(index.name)
+    request.setSettings(index.settings)
 
-    for ((name, mapping) <- Index.Mappings) {
+    for ((name, mapping) <- index.mappings) {
       request.addMapping(name, mapping)
     }
 
@@ -38,7 +38,7 @@ final class IndexService @Inject()(client: Client) {
     * @return If the deletion has been acknowledged.
     */
   def delete: Future[Boolean] = {
-    val request = client.admin().indices().prepareDelete(Index.Name)
+    val request = client.admin().indices().prepareDelete(index.name)
     val response = request.execute()
     response.map(_.isAcknowledged)
   }
@@ -49,7 +49,7 @@ final class IndexService @Inject()(client: Client) {
     * @return If the index exists.
     */
   def exists: Future[Boolean] = {
-    val request = client.admin().indices().prepareExists(Index.Name)
+    val request = client.admin().indices().prepareExists(index.name)
     val response = request.execute()
     response.map(_.isExists)
   }
