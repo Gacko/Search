@@ -11,9 +11,9 @@ import scala.concurrent.ExecutionContext
   */
 abstract class AbstractIndexController extends Controller {
 
-  def service: AbstractIndexService
+  protected def service: AbstractIndexService
 
-  implicit def context: ExecutionContext
+  protected implicit def context: ExecutionContext
 
   /**
     * Creates the index.
