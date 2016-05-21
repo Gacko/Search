@@ -11,6 +11,13 @@ import scala.language.implicitConversions
 
 object Helpers {
 
+  /**
+    * Implicitly converts a Java ListenableActionFuture into a Scala Future.
+    *
+    * @param actionFuture Java ListenableActionFuture
+    * @tparam T Result type of the ListenableActionFuture
+    * @return Scala Future
+    */
   implicit def listenableActionFuture2Future[T](actionFuture: ListenableActionFuture[T]): Future[T] = {
     val promise = Promise[T]()
 
