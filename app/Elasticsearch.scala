@@ -2,11 +2,11 @@ import java.net.InetAddress
 import javax.inject.{Inject, Singleton}
 
 import com.google.inject.AbstractModule
-import com.typesafe.config.ConfigFactory
 import org.elasticsearch.client.Client
 import org.elasticsearch.client.transport.TransportClient
 import org.elasticsearch.common.settings.Settings
 import org.elasticsearch.common.transport.InetSocketTransportAddress
+import play.api.Configuration
 import play.api.inject.ApplicationLifecycle
 
 import scala.collection.JavaConversions._
@@ -28,7 +28,7 @@ sealed class StartStop @Inject()(lifecycle: ApplicationLifecycle, client: Client
 
 }
 
-class Elasticsearch extends AbstractModule {
+class Elasticsearch(configuration: Configuration) extends AbstractModule {
 
   /**
     * Creates an instance of Client for Elasticsearch operations.
@@ -38,15 +38,19 @@ class Elasticsearch extends AbstractModule {
     * @return
     */
   private def connect: Client = {
-    val config = ConfigFactory.load()
+    val settings = Settings.builder()
 
-    val clusterName = config.getString("cluster.name")
-    val nodes = config.getStringList("cluster.nodes")
+    configuration.getString("cluster.name") match {
+      case Some(cluster) => settings.put("cluster.name", cluster)
+      case None =>
+    }
 
-    val settings = Settings.builder().put("cluster.name", clusterName).build()
     val client = TransportClient.builder().settings(settings).build()
 
-    for (node <- nodes) {
+    for {
+      nodes <- configuration.getStringList("cluster.nodes")
+      node <- nodes
+    } {
       val split = node.split(":", 2)
 
       val host = split(0)
