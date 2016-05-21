@@ -41,8 +41,9 @@ abstract class AbstractController extends Controller {
     * @return
     */
   def exists = Action.async {
-    service.exists.map { exists =>
-      Ok(Json.obj("exists" -> exists))
+    service.exists.map {
+      case true => Ok
+      case false => NotFound
     }
   }
 
