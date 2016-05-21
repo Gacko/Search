@@ -1,4 +1,9 @@
 # Tag
-POST          /tags             controllers.TagController.index
-POST          /tags/bulk        controllers.TagController.bulk
-DELETE        /tags/:id         controllers.TagController.delete(id)
+POST          /tags              controllers.TagController.index
+POST          /tags/bulk         controllers.TagController.bulk
+DELETE        /tags/:id          controllers.TagController.delete(id)
+
+# Tag Index
+POST          /index/tags        controllers.TagIndexController.create
+DELETE        /index/tags        controllers.TagIndexController.delete
+HEAD          /index/tags        controllers.TagIndexController.exists
