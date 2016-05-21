@@ -15,13 +15,30 @@ object Index {
   /**
     * Index settings.
     */
-  val Settings: String = {
-    Json.stringify(
-      Json.obj(
+  val Settings = Json.stringify(
+    Json.obj(
+      "settings" -> Json.obj(
         "number_of_replicas" -> 0,
         "number_of_shards" -> 4
+      ),
+      "analysis" -> Json.obj(
+        "analyzer" -> Json.obj(
+          "text" -> Json.obj(
+            "type" -> "custom",
+            "tokenizer" -> "whitespace",
+            "filter" -> Json.arr("trim", "lowercase")
+          )
+        )
       )
     )
-  }
+  )
+
+  /**
+    * Index mappings.
+    */
+  val Mappings = Map(
+    Tag.Type -> Tag.Mapping,
+    Comment.Type -> Comment.Mapping
+  )
 
 }

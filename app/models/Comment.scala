@@ -12,8 +12,30 @@ object Comment {
   implicit val Format = Json.format[Comment]
 
   /**
-    * Type name used for Elasticsearch mapping.
+    * Type name.
     */
   val Type = "comment"
+
+  /**
+    * Type mapping.
+    */
+  val Mapping = Json.stringify(
+    Json.obj(
+      "_all" -> Json.obj(
+        "enabled" -> false
+      ),
+      "properties" -> Json.obj(
+        "id" -> Json.obj(
+          "type" -> "integer"
+        ),
+        "post" -> Json.obj(
+          "type" -> "integer"
+        ),
+        "text" -> Json.obj(
+          "type" -> "string"
+        )
+      )
+    )
+  )
 
 }

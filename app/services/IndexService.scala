@@ -24,6 +24,10 @@ final class IndexService @Inject()(client: Client) {
     val request = client.admin().indices().prepareCreate(Index.Name)
     request.setSettings(Index.Settings)
 
+    for ((name, mapping) <- Index.Mappings) {
+      request.addMapping(name, mapping)
+    }
+
     val response = request.execute()
     response.map(_.isAcknowledged)
   }
