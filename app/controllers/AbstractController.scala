@@ -1,6 +1,6 @@
 package controllers
 
-import play.api.libs.json.Json
+import play.api.libs.json.{Format, Json}
 import play.api.mvc.{Action, Controller}
 import services.AbstractService
 
@@ -9,7 +9,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 /**
   * Marco Ebert 20.05.16
   */
-abstract class AbstractController[E] extends Controller {
+abstract class AbstractController[E](implicit val format: Format[E]) extends Controller {
 
   protected def service: AbstractService[E]
 
