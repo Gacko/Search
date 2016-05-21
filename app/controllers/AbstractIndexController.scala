@@ -4,7 +4,7 @@ import play.api.libs.json.Json
 import play.api.mvc.{Action, Controller}
 import services.AbstractIndexService
 
-import scala.concurrent.ExecutionContext
+import scala.concurrent.ExecutionContext.Implicits.global
 
 /**
   * Marco Ebert 20.05.16
@@ -12,8 +12,6 @@ import scala.concurrent.ExecutionContext
 abstract class AbstractIndexController extends Controller {
 
   protected def service: AbstractIndexService
-
-  protected implicit def context: ExecutionContext
 
   /**
     * Creates the index.

@@ -5,14 +5,10 @@ import javax.inject.Inject
 import org.elasticsearch.client.Client
 import play.api.libs.json.Json
 
-import scala.concurrent.ExecutionContext
-
 /**
   * Marco Ebert 20.05.16
   */
-final class TagIndexService @Inject()(override val client: Client, override val context: ExecutionContext)() extends AbstractIndexService {
-
-  override protected val index: String = "tags"
+final class TagIndexService @Inject()(override val client: Client) extends AbstractIndexService("tags") {
 
   override protected val settings: String = {
     Json.stringify(

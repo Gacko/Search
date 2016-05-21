@@ -3,18 +3,15 @@ package services
 import org.elasticsearch.client.Client
 import util.Helpers._
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 /**
   * Marco Ebert 20.05.16
   */
-abstract class AbstractIndexService {
+abstract class AbstractIndexService(index: String) {
 
   protected def client: Client
-
-  protected implicit def context: ExecutionContext
-
-  protected def index: String
 
   protected def settings: String
 
