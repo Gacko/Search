@@ -6,8 +6,8 @@ import org.elasticsearch.client.Client
 import org.elasticsearch.client.transport.TransportClient
 import org.elasticsearch.common.settings.Settings
 import org.elasticsearch.common.transport.InetSocketTransportAddress
-import play.api.Configuration
 import play.api.inject.ApplicationLifecycle
+import play.api.{Configuration, Environment}
 
 import scala.collection.JavaConversions._
 import scala.concurrent.Future
@@ -28,7 +28,7 @@ sealed class StartStop @Inject()(lifecycle: ApplicationLifecycle, client: Client
 
 }
 
-class Elasticsearch(configuration: Configuration) extends AbstractModule {
+class Elasticsearch(environment: Environment, configuration: Configuration) extends AbstractModule {
 
   /**
     * Creates an instance of Client for Elasticsearch operations.
