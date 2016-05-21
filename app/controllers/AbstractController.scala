@@ -14,60 +14,25 @@ abstract class AbstractController[E](implicit val format: Format[E]) extends Con
   protected def service: AbstractService[E]
 
   /**
-    * Indexes a sequence of entities.
+    * Indexes multiple entities.
     *
-    * @return Index status.
+    * @return If everything has been indexed successfully.
     */
   def index = Action.async(parse.json[Seq[E]]) { request =>
-    val entities = request.body
-    service.index(entities).map { indexed =>
+    service.index(request.body).map { indexed =>
       Ok(Json.obj("indexed" -> indexed))
     }
   }
 
   /**
-    * Deletes a document by ID.
+    * Deletes an entity by ID.
     *
-    * @param id Document ID.
-    * @return Deletion status.
+    * @param id Entity ID.
+    * @return If an entity has been found and deleted.
     */
   def delete(id: String) = Action.async {
     service.delete(id).map { deleted =>
       Ok(Json.obj("deleted" -> deleted))
-    }
-  }
-
-  /**
-    * Creates the index.
-    *
-    * @return
-    */
-  def create = Action.async {
-    service.create.map { created =>
-      Ok(Json.obj("created" -> created))
-    }
-  }
-
-  /**
-    * Drops the index.
-    *
-    * @return
-    */
-  def drop = Action.async {
-    service.drop.map { dropped =>
-      Ok(Json.obj("dropped" -> dropped))
-    }
-  }
-
-  /**
-    * Checks if the index exists.
-    *
-    * @return
-    */
-  def exists = Action.async {
-    service.exists.map {
-      case true => Ok
-      case false => NotFound
     }
   }
 

@@ -11,4 +11,9 @@ object Tag {
 
   implicit val Format = Json.format[Tag]
 
+  /**
+    * Type name used for Elasticsearch mapping.
+    */
+  val Type = "tag"
+
 }

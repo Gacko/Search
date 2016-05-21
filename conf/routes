@@ -1,6 +1,12 @@
 # Tag
-PUT           /tags            controllers.TagController.index
-DELETE        /tags/:id        controllers.TagController.delete(id)
-POST          /tags            controllers.TagController.create
-DELETE        /tags            controllers.TagController.drop
-HEAD          /tags            controllers.TagController.exists
+PUT           /tags                controllers.TagController.index
+DELETE        /tags/:id            controllers.TagController.delete(id)
+
+# Comment
+PUT           /comments            controllers.CommentController.index
+DELETE        /comments/:id        controllers.CommentController.delete(id)
+
+# Index
+GET           /index               controllers.IndexController.exists
+POST          /index               controllers.IndexController.create
+DELETE        /index               controllers.IndexController.delete
