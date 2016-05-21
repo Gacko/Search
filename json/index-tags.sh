@@ -1,3 +1,3 @@
 #!/bin/bash
-curl --request POST --header "Content-Type: application/json" "http://localhost:9000/tags/bulk" --data @`dirname $0`/tags.json
+curl --request PUT --header "Content-Type: application/json" "http://localhost:9000/tags" --data @`dirname $0`/tags.json
 echo ""
