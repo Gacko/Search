@@ -1,10 +1,10 @@
 # Tag
 PUT           /tags                controllers.TagController.index
-DELETE        /tags/:id            controllers.TagController.delete(id)
+DELETE        /tags/:id            controllers.TagController.delete(id: Int)
 
 # Comment
 PUT           /comments            controllers.CommentController.index
-DELETE        /comments/:id        controllers.CommentController.delete(id)
+DELETE        /comments/:id        controllers.CommentController.delete(id: Int)
 
 # Index
 GET           /index               controllers.IndexController.exists

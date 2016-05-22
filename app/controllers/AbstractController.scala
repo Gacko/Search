@@ -29,7 +29,7 @@ abstract class AbstractController[E <: Entity](service: AbstractService[E])(impl
     * @param id Entity ID.
     * @return If an entity has been found and deleted.
     */
-  def delete(id: String) = Action.async {
+  def delete(id: Int) = Action.async {
     service.delete(id).map { deleted =>
       Ok(Json.obj("deleted" -> deleted))
     }

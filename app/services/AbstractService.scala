@@ -42,8 +42,8 @@ abstract class AbstractService[E <: Entity](client: Client, index: Index, `type`
     * @param id Entity ID.
     * @return If an entity has been found and deleted.
     */
-  def delete(id: String): Future[Boolean] = {
-    val request = client.prepareDelete(index.name, `type`, id)
+  def delete(id: Int): Future[Boolean] = {
+    val request = client.prepareDelete(index.name, `type`, id.toString)
     val response = request.execute()
     response.map(_.isFound)
   }
