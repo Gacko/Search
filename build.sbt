@@ -1,4 +1,4 @@
-name := "Search"
+name := "pr0lastic"
 
 version := "1.0"
 
