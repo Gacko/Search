@@ -9,6 +9,9 @@ case class Tag(override val id: Int, post: Int, text: String) extends Entity
 
 object Tag {
 
+  /**
+    * Implicit JSON format.
+    */
   implicit val Format = Json.format[Tag]
 
   /**

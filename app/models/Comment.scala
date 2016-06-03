@@ -9,6 +9,9 @@ case class Comment(override val id: Int, post: Int, text: String) extends Entity
 
 object Comment {
 
+  /**
+    * Implicit JSON format.
+    */
   implicit val Format = Json.format[Comment]
 
   /**

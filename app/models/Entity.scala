@@ -5,6 +5,11 @@ package models
   */
 trait Entity {
 
+  /**
+    * Unique identifier.
+    *
+    * @return
+    */
   def id: Int
 
 }
