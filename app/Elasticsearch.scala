@@ -69,7 +69,7 @@ final class Elasticsearch(environment: Environment, configuration: Configuration
   /**
     * Connect to Elasticsearch and configure bindings.
     */
-  override def configure() = {
+  override def configure(): Unit = {
     val client = connect
     bind(classOf[Client]).toInstance(client)
     bind(classOf[StartStop]).asEagerSingleton()

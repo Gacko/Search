@@ -7,6 +7,4 @@ PUT           /comments            controllers.CommentController.index
 DELETE        /comments/:id        controllers.CommentController.delete(id: Int)
 
 # Index
-GET           /index               controllers.IndexController.exists
-POST          /index               controllers.IndexController.create
-DELETE        /index               controllers.IndexController.delete
+POST          /index               controllers.IndexController.switch

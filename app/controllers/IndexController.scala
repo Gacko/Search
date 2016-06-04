@@ -15,35 +15,13 @@ import scala.concurrent.ExecutionContext.Implicits.global
 final class IndexController @Inject()(service: IndexService) extends Controller {
 
   /**
-    * Creates the index.
+    * Switches indices.
     *
-    * @return If the creation has been acknowledged.
+    * @return
     */
-  def create = Action.async {
-    service.create.map { created =>
-      Ok(Json.obj("created" -> created))
-    }
-  }
-
-  /**
-    * Deletes the index.
-    *
-    * @return If the deletion has been acknowledged.
-    */
-  def delete = Action.async {
-    service.delete.map { deleted =>
-      Ok(Json.obj("deleted" -> deleted))
-    }
-  }
-
-  /**
-    * Checks if the index exists.
-    *
-    * @return If the index exists.
-    */
-  def exists = Action.async {
-    service.exists.map { exists =>
-      Ok(Json.obj("exists" -> exists))
+  def switch = Action.async {
+    service.switch.map { switched =>
+      Ok(Json.obj("switched" -> switched))
     }
   }
 

@@ -26,7 +26,7 @@ abstract class AbstractService[E <: Entity](client: Client, index: Index, `type`
       val json = Json.toJson(entity)
       val source = Json.stringify(json)
 
-      val request = client.prepareIndex(index.name, `type`, entity.id.toString)
+      val request = client.prepareIndex(index.write, `type`, entity.id.toString)
       request.setSource(source)
 
       bulk.add(request)
@@ -43,7 +43,7 @@ abstract class AbstractService[E <: Entity](client: Client, index: Index, `type`
     * @return If an entity has been found and deleted.
     */
   def delete(id: Int): Future[Boolean] = {
-    val request = client.prepareDelete(index.name, `type`, id.toString)
+    val request = client.prepareDelete(index.write, `type`, id.toString)
     val response = request.execute()
     response.map(_.isFound)
   }

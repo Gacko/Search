@@ -1,5 +1,7 @@
 package models
 
+import java.text.SimpleDateFormat
+import java.util.Date
 import javax.inject.{Inject, Singleton}
 
 import play.api.Configuration
@@ -12,9 +14,36 @@ import play.api.libs.json.Json
 class Index @Inject()(configuration: Configuration) {
 
   /**
-    * Index name.
+    * Base name.
     */
-  val name = "content"
+  private val base = "posts"
+
+  /**
+    * Unique name with timestamp.
+    *
+    * @return Unique name with timestamp.
+    */
+  def name: String = {
+    val sdf = new SimpleDateFormat("yyyy-MM-dd-hh-mm-ss")
+    val timestamp = sdf.format(new Date())
+
+    s"$base-$timestamp"
+  }
+
+  /**
+    * Search alias.
+    */
+  val read = s"$base-read"
+
+  /**
+    * Index alias.
+    */
+  val write = s"$base-write"
+
+  /**
+    * Backup alias.
+    */
+  val backup = s"$base-backup"
 
   /**
     * Index settings.
