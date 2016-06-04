@@ -8,3 +8,4 @@ DELETE        /comments/:id        controllers.CommentController.delete(id: Int)
 
 # Index
 POST          /index               controllers.IndexController.switch
+DELETE        /index               controllers.IndexController.rollback

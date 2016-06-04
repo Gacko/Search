@@ -118,15 +118,51 @@ final class IndexService @Inject()(client: Client, index: Index) {
       val switch = write match {
         case Some(w) if read != write =>
           val backup = aliases.get(index.backup)
-          read.foreach(setAlias(_, index.backup, backup).map(_ => backup.foreach(delete)))
+          read.filter(_ => read != backup).foreach { r =>
+            setAlias(r, index.backup, backup).foreach(_ => backup.foreach(delete))
+          }
           setAlias(w, index.read, read)
         case _ => create.flatMap { name =>
           setAlias(name, index.write, write)
         }
       }
 
-      switch.onComplete(_ => Logger.info(s"IndexService::switch: Switched indices."))
+      switch.foreach(_ => Logger.info(s"IndexService::switch: Switched indices."))
       switch
+    }
+  }
+
+  /**
+    * Sets the write alias to the read aliased index if they are not equal.
+    * Deletes the previously write aliased index afterwards.
+    *
+    * OR
+    *
+    * Sets the read alias to the backup aliased index if read and write are equal.
+    *
+    * @return
+    */
+  def rollback: Future[Boolean] = {
+    Logger.info(s"IndexService::rollback: Rolling back indices.")
+    aliases.flatMap { aliases =>
+      val read = aliases.get(index.read)
+      val write = aliases.get(index.write)
+
+      val rollback = read match {
+        case Some(r) if read != write =>
+          val alias = setAlias(r, index.write, write)
+          alias.foreach(_ => write.foreach(delete))
+          alias
+        case _ =>
+          val backup = aliases.get(index.backup)
+          backup match {
+            case Some(b) if read != backup => setAlias(b, index.read, read)
+            case _ => Future.successful(false)
+          }
+      }
+
+      rollback.foreach(_ => Logger.info(s"IndexService::rollback: Rolled back indices."))
+      rollback
     }
   }
 

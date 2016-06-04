@@ -25,4 +25,15 @@ final class IndexController @Inject()(service: IndexService) extends Controller 
     }
   }
 
+  /**
+    * Rolls back indices.
+    *
+    * @return
+    */
+  def rollback = Action.async {
+    service.rollback.map { rolledBack =>
+      Ok(Json.obj("rolledBack" -> rolledBack))
+    }
+  }
+
 }
