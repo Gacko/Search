@@ -5,7 +5,7 @@ import play.api.libs.json.Json
 /**
   * Marco Ebert 06.06.16
   */
-case class Post(override val id: String, tags: Seq[String], comments: Seq[String]) extends Entity
+case class Post(override val id: Int, tags: Seq[String], comments: Seq[String]) extends Entity
 
 object Post {
 
