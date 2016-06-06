@@ -118,13 +118,18 @@ final class IndexService @Inject()(client: Client, index: Index) {
       val switch = write match {
         case Some(w) if read != write =>
           val backup = aliases.get(index.backup)
-          read.filter(_ => read != backup).foreach { r =>
-            setAlias(r, index.backup, backup).foreach(_ => backup.foreach(delete))
-          }
+          for {
+            r <- read if read != backup
+            alias <- setAlias(r, index.backup, backup)
+            b <- backup
+          } delete(b)
+
           setAlias(w, index.read, read)
-        case _ => create.flatMap { name =>
-          setAlias(name, index.write, write)
-        }
+        case _ =>
+          for {
+            name <- create
+            alias <- setAlias(name, index.write, write)
+          } yield alias
       }
 
       switch.foreach(_ => Logger.info(s"IndexService::switch: Switched indices."))
