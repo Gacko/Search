@@ -70,6 +70,7 @@ class Index @Inject()(configuration: Configuration) {
     * Index mappings.
     */
   val mappings = Map(
+    Post.Type -> Post.Mapping,
     Tag.Type -> Tag.Mapping,
     Comment.Type -> Comment.Mapping
   )
