@@ -35,7 +35,8 @@ object Tag {
           "type" -> "integer"
         ),
         "text" -> Json.obj(
-          "type" -> "string"
+          "type" -> "string",
+          "analyzer" -> "text"
         )
       )
     )
