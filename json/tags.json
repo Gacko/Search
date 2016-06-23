@@ -1,12 +1,12 @@
-[
-  {
-    "id": 1,
-    "post": 1,
-    "text": "Kadse"
-  },
-  {
-    "id": 2,
-    "post": 1,
-    "text": "Bellkadse"
-  }
-]
+{
+  "tags": [
+    {
+      "id": 1,
+      "tag": "Rot"
+    },
+    {
+      "id": 2,
+      "tag": "Green"
+    }
+  ]
+}

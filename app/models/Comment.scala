@@ -3,9 +3,9 @@ package models
 import play.api.libs.json.Json
 
 /**
-  * Marco Ebert 21.05.16
+  * Marco Ebert 23.06.16
   */
-case class Comment(override val id: Int, post: Int, text: String) extends Entity
+case class Comment(id: Int, parent: Int, content: String, created: Long, name: String)
 
 object Comment {
 
@@ -15,31 +15,28 @@ object Comment {
   implicit val Format = Json.format[Comment]
 
   /**
-    * Type name.
+    * ID field name.
     */
-  val Type = "comment"
+  val ID = "id"
 
   /**
-    * Type mapping.
+    * Parent field name.
     */
-  val Mapping = Json.stringify(
-    Json.obj(
-      "_all" -> Json.obj(
-        "enabled" -> false
-      ),
-      "properties" -> Json.obj(
-        "id" -> Json.obj(
-          "type" -> "integer"
-        ),
-        "post" -> Json.obj(
-          "type" -> "integer"
-        ),
-        "text" -> Json.obj(
-          "type" -> "string",
-          "analyzer" -> "text"
-        )
-      )
-    )
-  )
+  val Parent = "parent"
+
+  /**
+    * Content field name.
+    */
+  val Content = "content"
+
+  /**
+    * Created field name.
+    */
+  val Created = "created"
+
+  /**
+    * Name field name.
+    */
+  val Name = "name"
 
 }

@@ -3,9 +3,9 @@ package models
 import play.api.libs.json.Json
 
 /**
-  * Marco Ebert 19.05.16
+  * Marco Ebert 23.06.16
   */
-case class Tag(override val id: Int, post: Int, text: String) extends Entity
+case class Tag(id: Int, tag: String)
 
 object Tag {
 
@@ -15,31 +15,13 @@ object Tag {
   implicit val Format = Json.format[Tag]
 
   /**
-    * Type name.
+    * ID field name.
     */
-  val Type = "tag"
+  val ID = "id"
 
   /**
-    * Type mapping.
+    * Tag field name.
     */
-  val Mapping = Json.stringify(
-    Json.obj(
-      "_all" -> Json.obj(
-        "enabled" -> false
-      ),
-      "properties" -> Json.obj(
-        "id" -> Json.obj(
-          "type" -> "integer"
-        ),
-        "post" -> Json.obj(
-          "type" -> "integer"
-        ),
-        "text" -> Json.obj(
-          "type" -> "string",
-          "analyzer" -> "text"
-        )
-      )
-    )
-  )
+  val Tag = "tag"
 
 }
