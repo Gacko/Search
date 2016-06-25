@@ -1,7 +1,11 @@
 # Post
-POST          /posts            controllers.PostController.index
-DELETE        /posts/:id        controllers.PostController.delete(id: Int)
+POST          /posts                              controllers.PostController.index
+DELETE        /posts/:id                          controllers.PostController.delete(id: Int)
+POST          /posts/:id/tags                     controllers.PostController.indexTags(id: Int)
+DELETE        /posts/:id/tags/:tag                controllers.PostController.deleteTag(id: Int, tag: Int)
+POST          /posts/:id/comments                 controllers.PostController.indexComment(id: Int)
+DELETE        /posts/:id/comments/:comment        controllers.PostController.deleteComment(id: Int, comment: Int)
 
 # Index
-POST          /index            controllers.IndexController.switch
-DELETE        /index            controllers.IndexController.rollback
+POST          /index                              controllers.IndexController.switch
+DELETE        /index                              controllers.IndexController.rollback

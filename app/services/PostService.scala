@@ -2,7 +2,7 @@ package services
 
 import javax.inject.{Inject, Singleton}
 
-import models.{Index, Post}
+import models.{Comment, Index, Post, Tag}
 import org.elasticsearch.client.Client
 import play.api.libs.json.Json
 import util.Helpers._
@@ -17,10 +17,25 @@ import scala.concurrent.Future
 final class PostService @Inject()(client: Client, index: Index) {
 
   /**
+    * Retrieves a post by ID.
+    *
+    * @param id Post ID.
+    * @return Some post if it exists.
+    */
+  private def get(id: Int): Future[Option[Post]] = {
+    val request = client.prepareGet(index.read, Post.Type, id.toString)
+    val response = request.execute()
+    response.map {
+      case r if r.isExists => Some(Json.parse(r.getSourceAsBytes).validate[Post].get)
+      case r => None
+    }
+  }
+
+  /**
     * Indexes a post.
     *
     * @param post Post to index.
-    * @return If a post has been indexed successfully.
+    * @return If the post has been indexed.
     */
   def index(post: Post): Future[Boolean] = {
     val json = Json.toJson(post)
@@ -34,7 +49,7 @@ final class PostService @Inject()(client: Client, index: Index) {
   }
 
   /**
-    * Deletes an post by ID.
+    * Deletes a post by ID.
     *
     * @param id Post ID.
     * @return If a post has been found and deleted.
@@ -43,6 +58,62 @@ final class PostService @Inject()(client: Client, index: Index) {
     val request = client.prepareDelete(index.write, Post.Type, id.toString)
     val response = request.execute()
     response.map(_.isFound)
+  }
+
+  /**
+    * Indexes tags for a post.
+    *
+    * @param id   Post ID.
+    * @param tags Tags.
+    * @return If a post has been found and the tags have been indexed.
+    */
+  def indexTags(id: Int, tags: Seq[Tag]): Future[Boolean] = {
+    get(id).flatMap {
+      case Some(post) => index(post.copy(tags = post.tags ++ tags))
+      case None => Future.successful(false)
+    }
+  }
+
+  /**
+    * Deletes a tag of a post.
+    *
+    * @param id  Post ID.
+    * @param tag Tag ID.
+    * @return If a post has been found and the tag has been deleted.
+    */
+  def deleteTag(id: Int, tag: Int): Future[Boolean] = {
+    get(id).flatMap {
+      case Some(post) => index(post.copy(tags = post.tags.filterNot(_.id == tag)))
+      case None => Future.successful(false)
+    }
+  }
+
+  /**
+    * Indexes a comment for a post.
+    *
+    * @param id      Post ID.
+    * @param comment Comment.
+    * @return If a post has been found and the comment has been indexed.
+    */
+  def indexComment(id: Int, comment: Comment): Future[Boolean] = {
+    get(id).flatMap {
+      case Some(post) => index(post.copy(comments = post.comments :+ comment))
+      case None => Future.successful(false)
+    }
+  }
+
+  /**
+    * Deletes a comment of a post.
+    *
+    * @param id      Post ID.
+    * @param comment Comment ID.
+    * @return If a post has been found and the comment has been deleted.
+    */
+  def deleteComment(id: Int, comment: Int): Future[Boolean] = {
+    get(id).flatMap {
+      case Some(post) => index(post.copy(comments = post.comments.filterNot(_.id == comment)))
+      case None => Future.successful(false)
+    }
   }
 
 }
