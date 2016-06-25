@@ -100,9 +100,19 @@ object Post {
   val Tags = "tags"
 
   /**
+    * Flat tags field name.
+    */
+  val FlatTags = "flatTags"
+
+  /**
     * Comments field name.
     */
   val Comments = "comments"
+
+  /**
+    * Flat comments field name.
+    */
+  val FlatComments = "flatComments"
 
   /**
     * Type mapping.
@@ -133,9 +143,22 @@ object Post {
           "type" -> "string",
           "index" -> "not_analyzed"
         ),
-        Comments -> Json.obj(
-          "type" -> "object",
+        Tags -> Json.obj(
+          "type" -> "nested",
           "properties" -> Json.obj(
+            Tag.Tag -> Json.obj(
+              "type" -> "string",
+              "copy_to" -> FlatTags
+            )
+          )
+        ),
+        Comments -> Json.obj(
+          "type" -> "nested",
+          "properties" -> Json.obj(
+            Comment.Content -> Json.obj(
+              "type" -> "string",
+              "copy_to" -> FlatComments
+            ),
             Comment.Name -> Json.obj(
               "type" -> "string",
               "index" -> "not_analyzed"
