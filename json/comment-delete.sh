@@ -1,3 +1,3 @@
 #!/bin/bash
-curl --request DELETE "http://localhost:9000/posts/1/comments/1"
+curl --request DELETE "http://localhost:9000/posts/1377495/comments/1"
 echo ""
