@@ -56,10 +56,10 @@ class Index @Inject()(configuration: Configuration) {
       ),
       "analysis" -> Json.obj(
         "analyzer" -> Json.obj(
-          "text" -> Json.obj(
+          "path" -> Json.obj(
             "type" -> "custom",
-            "tokenizer" -> "whitespace",
-            "filter" -> Json.arr("trim", "lowercase")
+            "tokenizer" -> "path_hierarchy",
+            "filter" -> Json.arr("lowercase")
           )
         )
       )
