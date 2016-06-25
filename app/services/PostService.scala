@@ -45,7 +45,7 @@ final class PostService @Inject()(client: Client, index: Index) {
     request.setSource(source)
 
     val response = request.execute()
-    response.map(_.getId == post.id)
+    response.map(_.getId == post.id.toString)
   }
 
   /**
@@ -67,7 +67,7 @@ final class PostService @Inject()(client: Client, index: Index) {
     * @param tags Tags.
     * @return If a post has been found and the tags have been indexed.
     */
-  def indexTags(id: Int, tags: Seq[Tag]): Future[Boolean] = {
+  def indexTags(id: Int, tags: Set[Tag]): Future[Boolean] = {
     get(id).flatMap {
       case Some(post) => index(post.copy(tags = post.tags ++ tags))
       case None => Future.successful(false)
@@ -97,7 +97,7 @@ final class PostService @Inject()(client: Client, index: Index) {
     */
   def indexComment(id: Int, comment: Comment): Future[Boolean] = {
     get(id).flatMap {
-      case Some(post) => index(post.copy(comments = post.comments :+ comment))
+      case Some(post) => index(post.copy(comments = post.comments + comment))
       case None => Future.successful(false)
     }
   }
