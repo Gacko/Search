@@ -113,41 +113,34 @@ object Post {
         "enabled" -> false
       ),
       "properties" -> Json.obj(
-        ID -> Json.obj(
-          "type" -> "integer"
-        ),
-        Promoted -> Json.obj(
-          "type" -> "integer"
-        ),
-        Created -> Json.obj(
-          "type" -> "long"
-        ),
         Image -> Json.obj(
-          "type" -> "string"
+          "type" -> "string",
+          "analyzer" -> "path"
         ),
         Thumb -> Json.obj(
-          "type" -> "string"
+          "type" -> "string",
+          "analyzer" -> "path"
         ),
         FullSize -> Json.obj(
-          "type" -> "string"
-        ),
-        Width -> Json.obj(
-          "type" -> "integer"
-        ),
-        Height -> Json.obj(
-          "type" -> "integer"
-        ),
-        Audio -> Json.obj(
-          "type" -> "boolean"
+          "type" -> "string",
+          "analyzer" -> "path"
         ),
         Source -> Json.obj(
-          "type" -> "string"
-        ),
-        Flags -> Json.obj(
-          "type" -> "byte"
+          "type" -> "string",
+          "analyzer" -> "path"
         ),
         User -> Json.obj(
-          "type" -> "string"
+          "type" -> "string",
+          "index" -> "not_analyzed"
+        ),
+        Comments -> Json.obj(
+          "type" -> "object",
+          "properties" -> Json.obj(
+            Comment.Name -> Json.obj(
+              "type" -> "string",
+              "index" -> "not_analyzed"
+            )
+          )
         )
       )
     )
