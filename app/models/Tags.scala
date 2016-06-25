@@ -5,7 +5,7 @@ import play.api.libs.json.Json
 /**
   * Marco Ebert 23.06.16
   */
-case class Tags(tags: Seq[Tag])
+case class Tags(tags: Set[Tag])
 
 object Tags {
 

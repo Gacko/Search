@@ -45,7 +45,7 @@ final class PostService @Inject()(client: Client, index: Index) {
     request.setSource(source)
 
     val response = request.execute()
-    response.map(_.isCreated)
+    response.map(_.getId == post.id)
   }
 
   /**
