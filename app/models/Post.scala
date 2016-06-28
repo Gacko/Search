@@ -123,6 +123,9 @@ object Post {
         "enabled" -> false
       ),
       "properties" -> Json.obj(
+        ID -> Json.obj("type" -> "integer"),
+        Promoted -> Json.obj("type" -> "integer"),
+        Created -> Json.obj("type" -> "long"),
         Image -> Json.obj(
           "type" -> "string",
           "analyzer" -> "path"
@@ -135,10 +138,14 @@ object Post {
           "type" -> "string",
           "analyzer" -> "path"
         ),
+        Width -> Json.obj("type" -> "integer"),
+        Height -> Json.obj("type" -> "integer"),
+        Audio -> Json.obj("type" -> "boolean"),
         Source -> Json.obj(
           "type" -> "string",
           "analyzer" -> "path"
         ),
+        Flags -> Json.obj("type" -> "byte"),
         User -> Json.obj(
           "type" -> "string",
           "index" -> "not_analyzed"
@@ -146,25 +153,31 @@ object Post {
         Tags -> Json.obj(
           "type" -> "nested",
           "properties" -> Json.obj(
+            Tag.ID -> Json.obj("type" -> "integer"),
             Tag.Tag -> Json.obj(
               "type" -> "string",
               "copy_to" -> FlatTags
             )
           )
         ),
+        FlatTags -> Json.obj("type" -> "string"),
         Comments -> Json.obj(
           "type" -> "nested",
           "properties" -> Json.obj(
+            Comment.ID -> Json.obj("type" -> "integer"),
+            Comment.Parent -> Json.obj("type" -> "integer"),
             Comment.Content -> Json.obj(
               "type" -> "string",
               "copy_to" -> FlatComments
             ),
+            Comment.Created -> Json.obj("type" -> "long"),
             Comment.Name -> Json.obj(
               "type" -> "string",
               "index" -> "not_analyzed"
             )
           )
-        )
+        ),
+        FlatComments -> Json.obj("type" -> "string")
       )
     )
   )
