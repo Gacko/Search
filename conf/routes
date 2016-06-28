@@ -1,5 +1,6 @@
 # Post
 POST          /posts                              controllers.PostController.index
+POST          /posts/bulk                         controllers.PostController.bulk
 DELETE        /posts/:id                          controllers.PostController.delete(id: Int)
 POST          /posts/:id/tags                     controllers.PostController.indexTags(id: Int)
 DELETE        /posts/:id/tags/:tag                controllers.PostController.deleteTag(id: Int, tag: Int)

@@ -2,7 +2,7 @@ package controllers
 
 import javax.inject.{Inject, Singleton}
 
-import models.{Comment, Post, Tags}
+import models.{Comment, Post, Posts, Tags}
 import play.api.libs.json.Json
 import play.api.mvc.{Action, Controller}
 import services.PostService
@@ -22,6 +22,17 @@ final class PostController @Inject()(service: PostService) extends Controller {
     */
   def index = Action.async(parse.json[Post]) { request =>
     service.index(request.body).map { indexed =>
+      Ok(Json.obj("indexed" -> indexed))
+    }
+  }
+
+  /**
+    * Indexes multiple posts.
+    *
+    * @return If the posts have been indexed.
+    */
+  def bulk = Action.async(parse.json[Posts]) { request =>
+    service.bulk(request.body).map { indexed =>
       Ok(Json.obj("indexed" -> indexed))
     }
   }

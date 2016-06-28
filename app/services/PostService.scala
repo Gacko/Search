@@ -2,7 +2,8 @@ package services
 
 import javax.inject.{Inject, Singleton}
 
-import models.{Comment, Index, Post, Tag}
+import models._
+import org.elasticsearch.action.index.IndexRequestBuilder
 import org.elasticsearch.client.Client
 import play.api.libs.json.Json
 import util.Helpers._
@@ -32,20 +33,49 @@ final class PostService @Inject()(client: Client, index: Index) {
   }
 
   /**
-    * Indexes a post.
+    * Prepares an index request for a post.
     *
     * @param post Post to index.
-    * @return If the post has been indexed.
+    * @return Index request for the post.
     */
-  def index(post: Post): Future[Boolean] = {
+  private def request(post: Post): IndexRequestBuilder = {
     val json = Json.toJson(post)
     val source = Json.stringify(json)
 
     val request = client.prepareIndex(index.write, Post.Type, post.id.toString)
     request.setSource(source)
 
+    request
+  }
+
+  /**
+    * Indexes a post.
+    *
+    * @param post Post to index.
+    * @return If the post has been indexed.
+    */
+  def index(post: Post): Future[Boolean] = {
+    val request = this.request(post)
     val response = request.execute()
     response.map(_.getId == post.id.toString)
+  }
+
+  /**
+    * Indexes multiple posts.
+    *
+    * @param posts Posts to index.
+    * @return If the posts have been indexed.
+    */
+  def bulk(posts: Posts): Future[Boolean] = {
+    val bulk = client.prepareBulk()
+
+    for (post <- posts.posts) {
+      val request = this.request(post)
+      bulk.add(request)
+    }
+
+    val response = bulk.execute()
+    response.map(!_.hasFailures)
   }
 
   /**
