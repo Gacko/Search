@@ -18,8 +18,8 @@ case class Post(
   source: String,
   flags: Byte,
   user: String,
-  tags: Set[Tag],
-  comments: Set[Comment]
+  tags: Seq[Tag],
+  comments: Seq[Comment]
 )
 
 object Post {
