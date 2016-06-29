@@ -10,3 +10,6 @@ DELETE        /posts/:id/comments/:comment        controllers.PostController.del
 # Index
 POST          /index                              controllers.IndexController.switch
 DELETE        /index                              controllers.IndexController.rollback
+
+# Crawler
+GET           /crawler                            controllers.CrawlerController.crawl(newer: Option[Int], older: Option[Int], flags: Option[Int], promoted: Option[Int])
