@@ -32,7 +32,7 @@ final class PostController @Inject()(service: PostService) extends Controller {
     * @return If the posts have been indexed.
     */
   def bulk = Action.async(parse.json[Posts]) { request =>
-    service.bulk(request.body).map { indexed =>
+    service.bulk(request.body.posts).map { indexed =>
       Ok(Json.obj("indexed" -> indexed))
     }
   }
