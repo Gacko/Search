@@ -11,7 +11,7 @@ import play.api.libs.json.Json
   * Marco Ebert 21.05.16
   */
 @Singleton
-class Index @Inject()(configuration: Configuration) {
+final class Index @Inject()(configuration: Configuration) {
 
   /**
     * Base name.
