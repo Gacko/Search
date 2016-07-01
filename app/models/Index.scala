@@ -24,7 +24,7 @@ final class Index @Inject()(configuration: Configuration) {
     * @return Unique name with timestamp.
     */
   def name: String = {
-    val sdf = new SimpleDateFormat("yyyy-MM-dd-hh-mm-ss")
+    val sdf = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss")
     val timestamp = sdf.format(new Date())
 
     s"$base-$timestamp"
