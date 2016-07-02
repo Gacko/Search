@@ -66,7 +66,7 @@ final class PostService @Inject()(client: Client, index: Index) {
     * @param posts Posts to index.
     * @return If the posts have been indexed.
     */
-  def bulk(posts: Seq[Post]): Future[Boolean] = {
+  def index(posts: Seq[Post]): Future[Boolean] = {
     val bulk = client.prepareBulk()
 
     for (post <- posts) {
