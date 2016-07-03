@@ -91,17 +91,28 @@ final class PostService @Inject()(client: Client, index: Index) {
   }
 
   /**
+    * Updates a post by providing an existing one to a function returning an updated one.
+    *
+    * @param id Post ID.
+    * @param f  Function updating the given post.
+    * @return If a post has been found and updated.
+    */
+  private def update(id: Int)(f: Post => Post): Future[Boolean] = {
+    get(id).flatMap {
+      case Some(post) => index(f(post))
+      case None => Future.successful(false)
+    }
+  }
+
+  /**
     * Indexes tags for a post.
     *
     * @param id   Post ID.
     * @param tags Tags.
     * @return If a post has been found and the tags have been indexed.
     */
-  def indexTags(id: Int, tags: Seq[Tag]): Future[Boolean] = {
-    get(id).flatMap {
-      case Some(post) => index(post.copy(tags = post.tags ++ tags))
-      case None => Future.successful(false)
-    }
+  def indexTags(id: Int, tags: Seq[Tag]): Future[Boolean] = update(id) { post =>
+    post.copy(tags = post.tags ++ tags)
   }
 
   /**
@@ -111,11 +122,8 @@ final class PostService @Inject()(client: Client, index: Index) {
     * @param tag Tag ID.
     * @return If a post has been found and the tag has been deleted.
     */
-  def deleteTag(id: Int, tag: Int): Future[Boolean] = {
-    get(id).flatMap {
-      case Some(post) => index(post.copy(tags = post.tags.filterNot(_.id == tag)))
-      case None => Future.successful(false)
-    }
+  def deleteTag(id: Int, tag: Int): Future[Boolean] = update(id) { post =>
+    post.copy(tags = post.tags.filterNot(_.id == tag))
   }
 
   /**
@@ -125,11 +133,8 @@ final class PostService @Inject()(client: Client, index: Index) {
     * @param comment Comment.
     * @return If a post has been found and the comment has been indexed.
     */
-  def indexComment(id: Int, comment: Comment): Future[Boolean] = {
-    get(id).flatMap {
-      case Some(post) => index(post.copy(comments = post.comments :+ comment))
-      case None => Future.successful(false)
-    }
+  def indexComment(id: Int, comment: Comment): Future[Boolean] = update(id) { post =>
+    post.copy(comments = post.comments :+ comment)
   }
 
   /**
@@ -139,11 +144,8 @@ final class PostService @Inject()(client: Client, index: Index) {
     * @param comment Comment ID.
     * @return If a post has been found and the comment has been deleted.
     */
-  def deleteComment(id: Int, comment: Int): Future[Boolean] = {
-    get(id).flatMap {
-      case Some(post) => index(post.copy(comments = post.comments.filterNot(_.id == comment)))
-      case None => Future.successful(false)
-    }
+  def deleteComment(id: Int, comment: Int): Future[Boolean] = update(id) { post =>
+    post.copy(comments = post.comments.filterNot(_.id == comment))
   }
 
 }
