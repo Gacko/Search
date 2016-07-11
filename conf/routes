@@ -1,3 +1,6 @@
+# Search
+GET           /search                             controllers.SearchController.search(term: String)
+
 # Post
 POST          /posts                              controllers.PostController.index
 POST          /posts/bulk                         controllers.PostController.bulk

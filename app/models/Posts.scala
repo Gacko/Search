@@ -10,8 +10,8 @@ case class Posts(posts: Seq[Post])
 object Posts {
 
   /**
-    * Implicit JSON reader.
+    * Implicit JSON format.
     */
-  implicit val Reads = Json.reads[Posts]
+  implicit val Reads = Json.format[Posts]
 
 }
