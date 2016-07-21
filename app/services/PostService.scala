@@ -6,8 +6,8 @@ import models._
 import org.elasticsearch.action.index.IndexRequestBuilder
 import org.elasticsearch.client.Client
 import org.elasticsearch.index.engine.VersionConflictEngineException
-import play.api.Logger
 import play.api.libs.json.Json
+import play.api.{Configuration, Logger}
 import util.Helpers._
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -17,8 +17,12 @@ import scala.concurrent.Future
   * Marco Ebert 20.05.16
   */
 @Singleton
-final class PostService @Inject()(client: Client, index: Index) {
+final class PostService @Inject()(client: Client, index: Index, configuration: Configuration) {
 
+  /**
+    * Maximum update retries.
+    */
+  private val Retries = configuration.getInt("update.retries").getOrElse(0)
 
   /**
     * Retrieves a post by ID.
@@ -118,7 +122,7 @@ final class PostService @Inject()(client: Client, index: Index) {
     * @param f  Function updating the given post.
     * @return If a post has been found and updated.
     */
-  private def update(id: Int, retries: Int = 1)(f: Post => Post): Future[Boolean] = {
+  private def update(id: Int, retries: Int = Retries)(f: Post => Post): Future[Boolean] = {
     get(id).flatMap {
       case Some((post, version)) =>
         val updated = f(post)
