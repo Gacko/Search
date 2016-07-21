@@ -5,6 +5,8 @@ import javax.inject.{Inject, Singleton}
 import models._
 import org.elasticsearch.action.index.IndexRequestBuilder
 import org.elasticsearch.client.Client
+import org.elasticsearch.index.engine.VersionConflictEngineException
+import play.api.Logger
 import play.api.libs.json.Json
 import util.Helpers._
 
@@ -17,17 +19,21 @@ import scala.concurrent.Future
 @Singleton
 final class PostService @Inject()(client: Client, index: Index) {
 
+
   /**
     * Retrieves a post by ID.
     *
     * @param id Post ID.
-    * @return Some post if it exists.
+    * @return Some post with version if it exists.
     */
-  private def get(id: Int): Future[Option[Post]] = {
+  private def get(id: Int): Future[Option[(Post, Long)]] = {
     val request = client.prepareGet(index.read, Post.Type, id.toString)
     val response = request.execute()
     response.map {
-      case r if r.isExists => Some(Json.parse(r.getSourceAsBytes).validate[Post].get)
+      case r if r.isExists =>
+        val post = Json.parse(r.getSourceAsBytes).validate[Post].get
+        val version = r.getVersion
+        Some((post, version))
       case r => None
     }
   }
@@ -46,6 +52,21 @@ final class PostService @Inject()(client: Client, index: Index) {
     request.setSource(source)
 
     request
+  }
+
+  /**
+    * Indexes a post with version.
+    *
+    * @param post    Post to index.
+    * @param version Document version.
+    * @return If the post has been indexed.
+    */
+  @throws[VersionConflictEngineException]
+  private def index(post: Post, version: Long): Future[Boolean] = {
+    val request = this.request(post)
+    request.setVersion(version)
+    val response = request.execute()
+    response.map(_.getId == post.id.toString)
   }
 
   /**
@@ -97,9 +118,19 @@ final class PostService @Inject()(client: Client, index: Index) {
     * @param f  Function updating the given post.
     * @return If a post has been found and updated.
     */
-  private def update(id: Int)(f: Post => Post): Future[Boolean] = {
+  private def update(id: Int, retries: Int = 1)(f: Post => Post): Future[Boolean] = {
     get(id).flatMap {
-      case Some(post) => index(f(post))
+      case Some((post, version)) =>
+        val updated = f(post)
+        try {
+          index(updated, version)
+        } catch {
+          case v: VersionConflictEngineException if retries > 0 => update(id, retries - 1)(f)
+          case v: VersionConflictEngineException =>
+            Logger.error(s"PostService::update: Failed to update post $id due to conflicting versions. No more retries left.")
+            Future.successful(false)
+          case e: Throwable => throw e
+        }
       case None => Future.successful(false)
     }
   }
