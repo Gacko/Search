@@ -126,9 +126,7 @@ final class PostService @Inject()(client: Client, index: Index, configuration: C
     get(id).flatMap {
       case Some((post, version)) =>
         val updated = f(post)
-        try {
-          index(updated, version)
-        } catch {
+        index(updated, version).recoverWith {
           case v: VersionConflictEngineException if retries > 0 => update(id, retries - 1)(f)
           case v: VersionConflictEngineException =>
             Logger.error(s"PostService::update: Failed to update post $id due to conflicting versions. No more retries left.")
