@@ -12,7 +12,7 @@
     </appender>
 
     <logger name="play" level="INFO"/>
-    <logger name="elasticsearch" level="INFO"/>
+    <logger name="org.elasticsearch" level="INFO"/>
     <logger name="application" level="INFO"/>
 
     <root level="WARN">
