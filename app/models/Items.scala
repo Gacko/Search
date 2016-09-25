@@ -1,6 +1,7 @@
 package models
 
-import play.api.libs.json.{JsValue, Json}
+import play.api.libs.json.JsValue
+import play.api.libs.json.Json
 
 /**
   * Marco Ebert 29.06.16

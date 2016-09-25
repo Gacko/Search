@@ -1,13 +1,14 @@
 package controllers
 
-import javax.inject.{Inject, Singleton}
+import javax.inject.Inject
+import javax.inject.Singleton
 
 import models.Posts
+import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.json.Json
-import play.api.mvc.{Action, Controller}
+import play.api.mvc.Action
+import play.api.mvc.Controller
 import services.SearchService
-
-import scala.concurrent.ExecutionContext.Implicits.global
 
 /**
   * Marco Ebert 11.07.16

@@ -1,14 +1,15 @@
 package services
 
-import javax.inject.{Inject, Singleton}
+import javax.inject.Inject
+import javax.inject.Singleton
 
 import models.Index
 import org.elasticsearch.client.Client
 import play.api.Logger
+import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import util.Helpers._
 
 import scala.collection.JavaConversions._
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 /**

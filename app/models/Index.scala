@@ -2,7 +2,8 @@ package models
 
 import java.text.SimpleDateFormat
 import java.util.Date
-import javax.inject.{Inject, Singleton}
+import javax.inject.Inject
+import javax.inject.Singleton
 
 import play.api.Configuration
 import play.api.libs.json.Json

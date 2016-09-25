@@ -1,16 +1,18 @@
 package services
 
-import javax.inject.{Inject, Singleton}
+import javax.inject.Inject
+import javax.inject.Singleton
 
-import models.{Index, Post}
+import models.Index
+import models.Post
 import org.elasticsearch.client.Client
 import org.elasticsearch.index.query.MatchQueryBuilder.Operator
 import org.elasticsearch.index.query.QueryBuilders
 import org.elasticsearch.search.sort.SortOrder
+import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.json.Json
 import util.Helpers._
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 /**

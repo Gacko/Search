@@ -1,13 +1,15 @@
 import java.net.InetAddress
-import javax.inject.{Inject, Singleton}
+import javax.inject.Inject
+import javax.inject.Singleton
 
 import com.google.inject.AbstractModule
 import org.elasticsearch.client.Client
 import org.elasticsearch.client.transport.TransportClient
 import org.elasticsearch.common.settings.Settings
 import org.elasticsearch.common.transport.InetSocketTransportAddress
+import play.api.Configuration
+import play.api.Environment
 import play.api.inject.ApplicationLifecycle
-import play.api.{Configuration, Environment}
 
 import scala.collection.JavaConversions._
 import scala.concurrent.Future
@@ -40,7 +42,7 @@ final class Elasticsearch(environment: Environment, configuration: Configuration
   private def connect: Client = {
     val settings = Settings.builder()
 
-    configuration.getString("cluster.name") match {
+    configuration getString "cluster.name" match {
       case Some(cluster) => settings.put("cluster.name", cluster)
       case None =>
     }

@@ -1,12 +1,16 @@
 package services
 
-import javax.inject.{Inject, Singleton}
+import javax.inject.Inject
+import javax.inject.Singleton
 
-import models.{Info, Item, Items, Post}
+import models.Info
+import models.Item
+import models.Items
+import models.Post
 import play.api.Configuration
+import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.ws.WSClient
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 /**

@@ -1,8 +1,10 @@
 package util
 
-import org.elasticsearch.action.{ActionListener, ListenableActionFuture}
+import org.elasticsearch.action.ActionListener
+import org.elasticsearch.action.ListenableActionFuture
 
-import scala.concurrent.{Future, Promise}
+import scala.concurrent.Future
+import scala.concurrent.Promise
 import scala.language.implicitConversions
 
 /**
