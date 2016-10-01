@@ -1,9 +1,12 @@
 package controllers
 
-import javax.inject.{Inject, Singleton}
+import javax.inject.Inject
+import javax.inject.Singleton
 
-import play.api.mvc.{Action, Controller}
-import services.{CrawlerService, PostService}
+import play.api.mvc.Action
+import play.api.mvc.Controller
+import services.CrawlerService
+import services.PostService
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
