@@ -17,7 +17,7 @@ import play.api.mvc.Controller
   * Marco Ebert 20.05.16
   */
 @Singleton
-final class PostController @Inject()(service: PostDAO) extends Controller {
+final class PostController @Inject()(postDAO: PostDAO) extends Controller {
 
   /**
     * Indexes a post.
@@ -25,7 +25,8 @@ final class PostController @Inject()(service: PostDAO) extends Controller {
     * @return If the post has been indexed.
     */
   def index = Action.async(parse.json[Post]) { request =>
-    service.index(request.body).map { indexed =>
+    val post = request.body
+    postDAO index post map { indexed =>
       Ok(Json.obj("indexed" -> indexed))
     }
   }
@@ -36,7 +37,8 @@ final class PostController @Inject()(service: PostDAO) extends Controller {
     * @return If the posts have been indexed.
     */
   def bulk = Action.async(parse.json[Posts]) { request =>
-    service.index(request.body.posts).map { indexed =>
+    val posts = request.body.posts
+    postDAO index posts map { indexed =>
       Ok(Json.obj("indexed" -> indexed))
     }
   }
@@ -48,7 +50,7 @@ final class PostController @Inject()(service: PostDAO) extends Controller {
     * @return If a post has been found and deleted.
     */
   def delete(id: Int) = Action.async {
-    service.delete(id).map { deleted =>
+    postDAO delete id map { deleted =>
       Ok(Json.obj("deleted" -> deleted))
     }
   }
@@ -60,7 +62,8 @@ final class PostController @Inject()(service: PostDAO) extends Controller {
     * @return If a post has been found and the tags have been indexed.
     */
   def indexTags(id: Int) = Action.async(parse.json[Tags]) { request =>
-    service.indexTags(id, request.body.tags).map { indexed =>
+    val tags = request.body.tags
+    postDAO.indexTags(id, tags) map { indexed =>
       Ok(Json.obj("indexed" -> indexed))
     }
   }
@@ -73,7 +76,7 @@ final class PostController @Inject()(service: PostDAO) extends Controller {
     * @return If a post has been found and the tag has been deleted.
     */
   def deleteTag(id: Int, tag: Int) = Action.async {
-    service.deleteTag(id, tag).map { deleted =>
+    postDAO.deleteTag(id, tag) map { deleted =>
       Ok(Json.obj("deleted" -> deleted))
     }
   }
@@ -85,7 +88,8 @@ final class PostController @Inject()(service: PostDAO) extends Controller {
     * @return If a post has been found and the comment has been indexed.
     */
   def indexComment(id: Int) = Action.async(parse.json[Comment]) { request =>
-    service.indexComment(id, request.body).map { indexed =>
+    val comment = request.body
+    postDAO.indexComment(id, comment) map { indexed =>
       Ok(Json.obj("indexed" -> indexed))
     }
   }
@@ -98,7 +102,7 @@ final class PostController @Inject()(service: PostDAO) extends Controller {
     * @return If a post has been found and the comment has been deleted.
     */
   def deleteComment(id: Int, comment: Int) = Action.async {
-    service.deleteComment(id, comment).map { deleted =>
+    postDAO.deleteComment(id, comment) map { deleted =>
       Ok(Json.obj("deleted" -> deleted))
     }
   }

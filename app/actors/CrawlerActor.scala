@@ -37,7 +37,7 @@ object CrawlerActor {
 
 }
 
-final class CrawlerActor @Inject()(crawler: CrawlerService, service: PostDAO) extends Actor {
+final class CrawlerActor @Inject()(crawler: CrawlerService, postDAO: PostDAO) extends Actor {
 
   /**
     * Handle crawler actor messages.
@@ -46,11 +46,11 @@ final class CrawlerActor @Inject()(crawler: CrawlerService, service: PostDAO) ex
     */
   override def receive: Receive = {
     case Start =>
-      Logger.info("CrawlerActor::receive: Received start message.")
+      Logger info "CrawlerActor::receive: Received start message."
     case Stop =>
-      Logger.info("CrawlerActor::receive: Received stop message.")
+      Logger info "CrawlerActor::receive: Received stop message."
     case Status =>
-      Logger.info("CrawlerActor::receive: Received status message.")
+      Logger info "CrawlerActor::receive: Received status message."
   }
 
 }
