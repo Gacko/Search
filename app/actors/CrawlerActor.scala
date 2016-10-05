@@ -6,9 +6,9 @@ import actors.CrawlerActor.Start
 import actors.CrawlerActor.Status
 import actors.CrawlerActor.Stop
 import akka.actor.Actor
+import dao.PostDAO
 import play.api.Logger
 import services.CrawlerService
-import services.PostService
 
 /**
   * Marco Ebert 24.09.16
@@ -37,7 +37,7 @@ object CrawlerActor {
 
 }
 
-final class CrawlerActor @Inject()(crawler: CrawlerService, service: PostService) extends Actor {
+final class CrawlerActor @Inject()(crawler: CrawlerService, service: PostDAO) extends Actor {
 
   /**
     * Handle crawler actor messages.

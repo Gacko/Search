@@ -1,4 +1,4 @@
-package services
+package dao
 
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -19,7 +19,7 @@ import scala.concurrent.Future
   * Marco Ebert 20.05.16
   */
 @Singleton
-final class PostService @Inject()(client: Client, index: Index, configuration: Configuration) {
+final class ElasticPostDAO @Inject()(client: Client, index: Index, configuration: Configuration) extends PostDAO {
 
   /**
     * Maximum update retries.
@@ -81,7 +81,7 @@ final class PostService @Inject()(client: Client, index: Index, configuration: C
     * @param post Post to index.
     * @return If the post has been indexed.
     */
-  def index(post: Post): Future[Boolean] = {
+  override def index(post: Post): Future[Boolean] = {
     val request = this.request(post)
     val response = request.execute()
     response.map(_.getId == post.id.toString)
@@ -93,7 +93,7 @@ final class PostService @Inject()(client: Client, index: Index, configuration: C
     * @param posts Posts to index.
     * @return If the posts have been indexed.
     */
-  def index(posts: Seq[Post]): Future[Boolean] = {
+  override def index(posts: Seq[Post]): Future[Boolean] = {
     val bulk = client.prepareBulk()
 
     for (post <- posts) {
@@ -111,7 +111,7 @@ final class PostService @Inject()(client: Client, index: Index, configuration: C
     * @param id Post ID.
     * @return If a post has been found and deleted.
     */
-  def delete(id: Int): Future[Boolean] = {
+  override def delete(id: Int): Future[Boolean] = {
     val request = client.prepareDelete(index.write, Post.Type, id.toString)
     val response = request.execute()
     response.map(_.isFound)
@@ -146,7 +146,7 @@ final class PostService @Inject()(client: Client, index: Index, configuration: C
     * @param tags Tags.
     * @return If a post has been found and the tags have been indexed.
     */
-  def indexTags(id: Int, tags: Seq[Tag]): Future[Boolean] = update(id) { post =>
+  override def indexTags(id: Int, tags: Seq[Tag]): Future[Boolean] = update(id) { post =>
     post.copy(tags = post.tags ++ tags)
   }
 
@@ -157,7 +157,7 @@ final class PostService @Inject()(client: Client, index: Index, configuration: C
     * @param tag Tag ID.
     * @return If a post has been found and the tag has been deleted.
     */
-  def deleteTag(id: Int, tag: Int): Future[Boolean] = update(id) { post =>
+  override def deleteTag(id: Int, tag: Int): Future[Boolean] = update(id) { post =>
     post.copy(tags = post.tags.filterNot(_.id == tag))
   }
 
@@ -168,7 +168,7 @@ final class PostService @Inject()(client: Client, index: Index, configuration: C
     * @param comment Comment.
     * @return If a post has been found and the comment has been indexed.
     */
-  def indexComment(id: Int, comment: Comment): Future[Boolean] = update(id) { post =>
+  override def indexComment(id: Int, comment: Comment): Future[Boolean] = update(id) { post =>
     post.copy(comments = post.comments :+ comment)
   }
 
@@ -179,7 +179,7 @@ final class PostService @Inject()(client: Client, index: Index, configuration: C
     * @param comment Comment ID.
     * @return If a post has been found and the comment has been deleted.
     */
-  def deleteComment(id: Int, comment: Int): Future[Boolean] = update(id) { post =>
+  override def deleteComment(id: Int, comment: Int): Future[Boolean] = update(id) { post =>
     post.copy(comments = post.comments.filterNot(_.id == comment))
   }
 

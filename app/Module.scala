@@ -6,6 +6,8 @@ import actors.CrawlerActor
 import akka.actor.ActorRef
 import akka.actor.ActorSystem
 import com.google.inject.AbstractModule
+import dao.ElasticPostDAO
+import dao.PostDAO
 import play.api.inject.ApplicationLifecycle
 import play.api.libs.concurrent.AkkaGuiceSupport
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
@@ -44,6 +46,8 @@ final class Module extends AbstractModule with AkkaGuiceSupport {
     * Configure bindings.
     */
   override def configure(): Unit = {
+    // Bind PostDAO to ElasticPostDAO
+    bind(classOf[PostDAO]) to classOf[ElasticPostDAO]
     // Bind CrawlerActor.
     bindActor[CrawlerActor](CrawlerActor.Name)
     // Bind StartStop as eager singleton.

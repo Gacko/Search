@@ -3,10 +3,10 @@ package controllers
 import javax.inject.Inject
 import javax.inject.Singleton
 
+import dao.PostDAO
 import play.api.mvc.Action
 import play.api.mvc.Controller
 import services.CrawlerService
-import services.PostService
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -14,7 +14,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
   * Marco Ebert 29.06.16
   */
 @Singleton
-final class CrawlerController @Inject()(crawler: CrawlerService, service: PostService) extends Controller {
+final class CrawlerController @Inject()(crawler: CrawlerService, service: PostDAO) extends Controller {
 
   /**
     * Fetches items with infos and indexes them as posts.

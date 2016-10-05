@@ -3,6 +3,7 @@ package controllers
 import javax.inject.Inject
 import javax.inject.Singleton
 
+import dao.PostDAO
 import models.Comment
 import models.Post
 import models.Posts
@@ -11,13 +12,12 @@ import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.json.Json
 import play.api.mvc.Action
 import play.api.mvc.Controller
-import services.PostService
 
 /**
   * Marco Ebert 20.05.16
   */
 @Singleton
-final class PostController @Inject()(service: PostService) extends Controller {
+final class PostController @Inject()(service: PostDAO) extends Controller {
 
   /**
     * Indexes a post.
