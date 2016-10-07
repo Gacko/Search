@@ -181,7 +181,7 @@ final class ElasticPostDAO @Inject()(client: Client, index: Index, configuration
     * @return If a post has been found and the tag has been deleted.
     */
   override def deleteTag(id: Int, tag: Int)(implicit ec: ExecutionContext): Future[Boolean] = update(id) { post =>
-    post.copy(tags = post.tags.filterNot(_.id == tag))
+    post.copy(tags = post.tags filterNot { _.id == tag })
   }
 
   /**
@@ -203,7 +203,7 @@ final class ElasticPostDAO @Inject()(client: Client, index: Index, configuration
     * @return If a post has been found and the comment has been deleted.
     */
   override def deleteComment(id: Int, comment: Int)(implicit ec: ExecutionContext): Future[Boolean] = update(id) { post =>
-    post.copy(comments = post.comments.filterNot(_.id == comment))
+    post.copy(comments = post.comments filterNot { _.id == comment })
   }
 
 }
