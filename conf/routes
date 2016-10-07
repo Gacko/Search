@@ -5,8 +5,8 @@ GET           /search                             controllers.SearchController.s
 POST          /posts                              controllers.PostController.index
 POST          /posts/bulk                         controllers.PostController.bulk
 DELETE        /posts/:id                          controllers.PostController.delete(id: Int)
-POST          /posts/:id/tags                     controllers.PostController.indexTags(id: Int)
-DELETE        /posts/:id/tags/:tag                controllers.PostController.deleteTag(id: Int, tag: Int)
+POST          /posts/:post/tags                   controllers.TagController.index(post: Int)
+DELETE        /posts/:post/tags/:id               controllers.TagController.delete(post: Int, id: Int)
 POST          /posts/:id/comments                 controllers.PostController.indexComment(id: Int)
 DELETE        /posts/:id/comments/:comment        controllers.PostController.deleteComment(id: Int, comment: Int)
 

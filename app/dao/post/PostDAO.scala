@@ -35,22 +35,13 @@ trait PostDAO {
   def delete(id: Int)(implicit ec: ExecutionContext): Future[Boolean]
 
   /**
-    * Indexes tags for a post.
+    * Updates a post by providing an existing one to a function returning an updated one.
     *
-    * @param id   Post ID.
-    * @param tags Tags.
-    * @return If a post has been found and the tags have been indexed.
+    * @param id Post ID.
+    * @param f  Function updating the given post.
+    * @return If a post has been found and updated.
     */
-  def indexTags(id: Int, tags: Seq[Tag])(implicit ec: ExecutionContext): Future[Boolean]
-
-  /**
-    * Deletes a tag of a post.
-    *
-    * @param id  Post ID.
-    * @param tag Tag ID.
-    * @return If a post has been found and the tag has been deleted.
-    */
-  def deleteTag(id: Int, tag: Int)(implicit ec: ExecutionContext): Future[Boolean]
+  def update(id: Int)(f: Post => Post)(implicit ec: ExecutionContext): Future[Boolean]
 
   /**
     * Indexes a comment for a post.

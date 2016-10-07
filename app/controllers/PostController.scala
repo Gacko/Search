@@ -7,7 +7,6 @@ import dao.post.PostDAO
 import models.Comment
 import models.Post
 import models.Posts
-import models.Tags
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.json.Json
 import play.api.mvc.Action
@@ -51,32 +50,6 @@ final class PostController @Inject()(postDAO: PostDAO) extends Controller {
     */
   def delete(id: Int) = Action.async {
     postDAO delete id map { deleted =>
-      Ok(Json.obj("deleted" -> deleted))
-    }
-  }
-
-  /**
-    * Indexes tags for a post.
-    *
-    * @param id Post ID.
-    * @return If a post has been found and the tags have been indexed.
-    */
-  def indexTags(id: Int) = Action.async(parse.json[Tags]) { request =>
-    val tags = request.body.tags
-    postDAO.indexTags(id, tags) map { indexed =>
-      Ok(Json.obj("indexed" -> indexed))
-    }
-  }
-
-  /**
-    * Deletes a tag of a post.
-    *
-    * @param id  Post ID.
-    * @param tag Tag ID.
-    * @return If a post has been found and the tag has been deleted.
-    */
-  def deleteTag(id: Int, tag: Int) = Action.async {
-    postDAO.deleteTag(id, tag) map { deleted =>
       Ok(Json.obj("deleted" -> deleted))
     }
   }

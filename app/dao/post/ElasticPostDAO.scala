@@ -147,41 +147,23 @@ final class ElasticPostDAO @Inject()(client: Client, index: Index, configuration
     * @param f  Function updating the given post.
     * @return If a post has been found and updated.
     */
-  private def update(id: Int, retries: Int = Retries)(f: Post => Post)(implicit ec: ExecutionContext): Future[Boolean] = {
-    get(id) flatMap {
-      case Some((post, version)) =>
-        val updated = f(post)
-        index(updated, version) recoverWith {
-          case v: VersionConflictEngineException if retries > 0 => update(id, retries - 1)(f)
-          case v: VersionConflictEngineException =>
-            Logger.error(s"PostService::update: Failed to update post $id due to conflicting versions. No more retries left.")
-            Future successful false
-          case e: Throwable => throw e
-        }
-      case None => Future successful false
+  override def update(id: Int)(f: Post => Post)(implicit ec: ExecutionContext): Future[Boolean] = {
+    def update(id: Int, retries: Int)(f: Post => Post): Future[Boolean] = {
+      get(id) flatMap {
+        case Some((post, version)) =>
+          val updated = f(post)
+          index(updated, version) recoverWith {
+            case v: VersionConflictEngineException if retries > 0 => update(id, retries - 1)(f)
+            case v: VersionConflictEngineException =>
+              Logger.error(s"PostService::update: Failed to update post $id due to conflicting versions. No more retries left.")
+              Future successful false
+            case e: Throwable => throw e
+          }
+        case None => Future successful false
+      }
     }
-  }
 
-  /**
-    * Indexes tags for a post.
-    *
-    * @param id   Post ID.
-    * @param tags Tags.
-    * @return If a post has been found and the tags have been indexed.
-    */
-  override def indexTags(id: Int, tags: Seq[Tag])(implicit ec: ExecutionContext): Future[Boolean] = update(id) { post =>
-    post.copy(tags = post.tags ++ tags)
-  }
-
-  /**
-    * Deletes a tag of a post.
-    *
-    * @param id  Post ID.
-    * @param tag Tag ID.
-    * @return If a post has been found and the tag has been deleted.
-    */
-  override def deleteTag(id: Int, tag: Int)(implicit ec: ExecutionContext): Future[Boolean] = update(id) { post =>
-    post.copy(tags = post.tags filterNot { _.id == tag })
+    update(id, Retries)(f)
   }
 
   /**
