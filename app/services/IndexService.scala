@@ -7,7 +7,7 @@ import models.Index
 import org.elasticsearch.client.Client
 import play.api.Logger
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
-import util.Helpers._
+import util.Futures._
 
 import scala.collection.JavaConversions._
 import scala.concurrent.Future

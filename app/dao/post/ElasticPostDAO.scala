@@ -10,7 +10,7 @@ import org.elasticsearch.index.engine.VersionConflictEngineException
 import play.api.Configuration
 import play.api.Logger
 import play.api.libs.json.Json
-import util.Helpers._
+import util.Futures._
 
 import scala.concurrent.ExecutionContext
 import scala.concurrent.Future

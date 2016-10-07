@@ -11,7 +11,7 @@ import org.elasticsearch.index.query.QueryBuilders
 import org.elasticsearch.search.sort.SortOrder
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.json.Json
-import util.Helpers._
+import util.Futures._
 
 import scala.concurrent.Future
 
