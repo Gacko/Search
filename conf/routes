@@ -15,4 +15,5 @@ POST          /index                              controllers.IndexController.sw
 DELETE        /index                              controllers.IndexController.rollback
 
 # Crawler
-GET           /crawler                            controllers.CrawlerController.crawl(newer: Option[Int], older: Option[Int], flags: Option[Int], promoted: Option[Int])
+POST          /crawler/start                      controllers.CrawlerController.start
+POST          /crawler/stop                       controllers.CrawlerController.stop

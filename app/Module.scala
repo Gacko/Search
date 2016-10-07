@@ -6,8 +6,8 @@ import actors.CrawlerActor
 import akka.actor.ActorRef
 import akka.actor.ActorSystem
 import com.google.inject.AbstractModule
-import dao.ElasticPostDAO
-import dao.PostDAO
+import dao.post.ElasticPostDAO
+import dao.post.PostDAO
 import play.api.inject.ApplicationLifecycle
 import play.api.libs.concurrent.AkkaGuiceSupport
 import play.api.libs.concurrent.Execution.Implicits.defaultContext

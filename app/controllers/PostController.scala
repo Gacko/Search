@@ -3,7 +3,7 @@ package controllers
 import javax.inject.Inject
 import javax.inject.Singleton
 
-import dao.PostDAO
+import dao.post.PostDAO
 import models.Comment
 import models.Post
 import models.Posts

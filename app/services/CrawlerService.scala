@@ -22,12 +22,12 @@ final class CrawlerService @Inject()(ws: WSClient, configuration: Configuration)
   /**
     * Items URL.
     */
-  private val Items = configuration.getString("url.items").getOrElse("http://pr0gramm.com/api/items/get")
+  private val Items = configuration getString "url.items" getOrElse "http://pr0gramm.com/api/items/get"
 
   /**
     * Info URL.
     */
-  private val Info = configuration.getString("url.info").getOrElse("http://pr0gramm.com/api/items/info")
+  private val Info = configuration getString "url.info" getOrElse "http://pr0gramm.com/api/items/info"
 
   /**
     * Fetches items by age, flags and promotion status.
@@ -39,19 +39,22 @@ final class CrawlerService @Inject()(ws: WSClient, configuration: Configuration)
     * @return Items for given parameters.
     */
   def items(newer: Option[Int], older: Option[Int], flags: Option[Byte], promoted: Option[Boolean]): Future[Items] = {
-    val url = ws.url(Items)
+    // Prepare URL.
+    val url = ws url Items
+    // Build request with parameters if exist.
     val request = Seq(
       newer.map(n => "newer" -> n.toString),
       older.map(o => "older" -> o.toString),
       flags.map(f => "flags" -> f.toString),
       promoted.map(p => "promoted" -> (if (p) "1" else "0"))
     ).flatten match {
-      case parameters if parameters.nonEmpty => url.withQueryString(parameters: _*)
+      case parameters if parameters.nonEmpty => url withQueryString (parameters: _*)
       case _ => url
     }
 
-    val response = request.get()
-    response.map { response =>
+    // Execute request.
+    request.get map { response =>
+      // Extract items from response.
       response.json.validate[Items].get
     }
   }
@@ -63,9 +66,12 @@ final class CrawlerService @Inject()(ws: WSClient, configuration: Configuration)
     * @return Info by item ID.
     */
   def info(id: Int): Future[Info] = {
-    val request = ws.url(Info).withQueryString("itemId" -> id.toString)
-    val response = request.get()
-    response.map { response =>
+    // Prepare URL and build request with parameter.
+    val request = ws url Info withQueryString "itemId" -> id.toString
+
+    // Execute request.
+    request.get map { response =>
+      // Extract info from response.
       response.json.validate[Info].get
     }
   }
@@ -97,21 +103,19 @@ final class CrawlerService @Inject()(ws: WSClient, configuration: Configuration)
   }
 
   /**
-    * Fetches infos for given items and combines them to posts.
+    * Fetches info for given items and combines them to posts.
     *
-    * @param items Items to fetch infos for.
+    * @param items Items to fetch info for.
     * @return Posts for items.
     */
   def posts(items: Seq[Item]): Future[Seq[Post]] = {
-    items.headOption match {
-      case Some(item) =>
-        for {
-          info <- info(item.id)
-          posts <- posts(items.tail)
-        } yield {
-          posts :+ post(item, info)
-        }
-      case None => Future.successful(Seq.empty[Post])
+    items.foldLeft(Future.successful(Seq.empty[Post])) { (posts, item) =>
+      for {
+        posts <- posts
+        info <- info(item.id)
+      } yield {
+        posts :+ post(item, info)
+      }
     }
   }
 

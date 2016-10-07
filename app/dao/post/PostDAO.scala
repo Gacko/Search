@@ -1,7 +1,8 @@
-package dao
+package dao.post
 
 import models._
 
+import scala.concurrent.ExecutionContext
 import scala.concurrent.Future
 
 /**
@@ -15,7 +16,7 @@ trait PostDAO {
     * @param post Post to index.
     * @return If the post has been indexed.
     */
-  def index(post: Post): Future[Boolean]
+  def index(post: Post)(implicit ec: ExecutionContext): Future[Boolean]
 
   /**
     * Indexes multiple posts.
@@ -23,7 +24,7 @@ trait PostDAO {
     * @param posts Posts to index.
     * @return If the posts have been indexed.
     */
-  def index(posts: Seq[Post]): Future[Boolean]
+  def index(posts: Seq[Post])(implicit ec: ExecutionContext): Future[Boolean]
 
   /**
     * Deletes a post by ID.
@@ -31,7 +32,7 @@ trait PostDAO {
     * @param id Post ID.
     * @return If a post has been found and deleted.
     */
-  def delete(id: Int): Future[Boolean]
+  def delete(id: Int)(implicit ec: ExecutionContext): Future[Boolean]
 
   /**
     * Indexes tags for a post.
@@ -40,7 +41,7 @@ trait PostDAO {
     * @param tags Tags.
     * @return If a post has been found and the tags have been indexed.
     */
-  def indexTags(id: Int, tags: Seq[Tag]): Future[Boolean]
+  def indexTags(id: Int, tags: Seq[Tag])(implicit ec: ExecutionContext): Future[Boolean]
 
   /**
     * Deletes a tag of a post.
@@ -49,7 +50,7 @@ trait PostDAO {
     * @param tag Tag ID.
     * @return If a post has been found and the tag has been deleted.
     */
-  def deleteTag(id: Int, tag: Int): Future[Boolean]
+  def deleteTag(id: Int, tag: Int)(implicit ec: ExecutionContext): Future[Boolean]
 
   /**
     * Indexes a comment for a post.
@@ -58,7 +59,7 @@ trait PostDAO {
     * @param comment Comment.
     * @return If a post has been found and the comment has been indexed.
     */
-  def indexComment(id: Int, comment: Comment): Future[Boolean]
+  def indexComment(id: Int, comment: Comment)(implicit ec: ExecutionContext): Future[Boolean]
 
   /**
     * Deletes a comment of a post.
@@ -67,6 +68,6 @@ trait PostDAO {
     * @param comment Comment ID.
     * @return If a post has been found and the comment has been deleted.
     */
-  def deleteComment(id: Int, comment: Int): Future[Boolean]
+  def deleteComment(id: Int, comment: Int)(implicit ec: ExecutionContext): Future[Boolean]
 
 }

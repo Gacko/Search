@@ -3,10 +3,9 @@ package actors
 import javax.inject.Inject
 
 import actors.CrawlerActor.Start
-import actors.CrawlerActor.Status
 import actors.CrawlerActor.Stop
 import akka.actor.Actor
-import dao.PostDAO
+import dao.post.PostDAO
 import play.api.Logger
 import services.CrawlerService
 
@@ -30,11 +29,6 @@ object CrawlerActor {
     */
   case object Stop
 
-  /**
-    * Status message.
-    */
-  case object Status
-
 }
 
 final class CrawlerActor @Inject()(crawler: CrawlerService, postDAO: PostDAO) extends Actor {
@@ -49,8 +43,6 @@ final class CrawlerActor @Inject()(crawler: CrawlerService, postDAO: PostDAO) ex
       Logger info "CrawlerActor::receive: Received start message."
     case Stop =>
       Logger info "CrawlerActor::receive: Received stop message."
-    case Status =>
-      Logger info "CrawlerActor::receive: Received status message."
   }
 
 }

@@ -23,9 +23,13 @@ final class SearchController @Inject()(service: SearchService) extends Controlle
     * @return Posts containing term in tags.
     */
   def search(term: String) = Action.async {
-    service.search(term).map { posts =>
+    // Search for term.
+    service search term map { posts =>
+      // Wrap posts.
       val wrapper = Posts(posts)
-      val json = Json.toJson(wrapper)
+      // Convert posts into JSON.
+      val json = Json toJson wrapper
+      // Return posts as JSON.
       Ok(json)
     }
   }
