@@ -24,9 +24,9 @@ object Futures {
 
     actionFuture addListener new ActionListener[T] {
 
-      override def onFailure(throwable: Throwable): Unit = promise failure throwable
-
       override def onResponse(response: T): Unit = promise success response
+
+      override def onFailure(throwable: Throwable): Unit = promise failure throwable
 
     }
 
