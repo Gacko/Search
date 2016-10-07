@@ -1,6 +1,7 @@
 package actors
 
 import actors.CrawlerActor.Start
+import actors.CrawlerActor.Status
 import actors.CrawlerActor.Stop
 import akka.actor.Actor
 import play.api.Logger
@@ -25,6 +26,11 @@ object CrawlerActor {
     */
   case object Stop
 
+  /**
+    * Status message.
+    */
+  case object Status
+
 }
 
 final class CrawlerActor extends Actor {
@@ -39,6 +45,9 @@ final class CrawlerActor extends Actor {
       Logger info "CrawlerActor::receive: Received start message."
     case Stop =>
       Logger info "CrawlerActor::receive: Received stop message."
+    case Status =>
+      Logger info "CrawlerActor::receive: Received status message."
+      sender ! true
   }
 
 }

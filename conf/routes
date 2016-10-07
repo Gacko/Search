@@ -17,3 +17,4 @@ DELETE        /index                              controllers.IndexController.ro
 # Crawler
 POST          /crawler/start                      controllers.CrawlerController.start
 POST          /crawler/stop                       controllers.CrawlerController.stop
+GET           /crawler/status                     controllers.CrawlerController.status
