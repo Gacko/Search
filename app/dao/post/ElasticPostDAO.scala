@@ -126,21 +126,6 @@ final class ElasticPostDAO @Inject()(client: Client, index: Index, configuration
   }
 
   /**
-    * Deletes a post by ID.
-    *
-    * @param id Post ID.
-    * @return If a post has been found and deleted.
-    */
-  override def delete(id: Int)(implicit ec: ExecutionContext): Future[Boolean] = {
-    // Create request.
-    val request = client.prepareDelete(index.write, Post.Type, id.toString)
-    // Execute request.
-    val response = request.execute
-    // Handle response.
-    response map { response => response.isFound }
-  }
-
-  /**
     * Updates a post by providing an existing one to a function returning an updated one.
     *
     * @param id Post ID.
@@ -167,25 +152,18 @@ final class ElasticPostDAO @Inject()(client: Client, index: Index, configuration
   }
 
   /**
-    * Indexes a comment for a post.
+    * Deletes a post by ID.
     *
-    * @param id      Post ID.
-    * @param comment Comment.
-    * @return If a post has been found and the comment has been indexed.
+    * @param id Post ID.
+    * @return If a post has been found and deleted.
     */
-  override def indexComment(id: Int, comment: Comment)(implicit ec: ExecutionContext): Future[Boolean] = update(id) { post =>
-    post.copy(comments = post.comments :+ comment)
-  }
-
-  /**
-    * Deletes a comment of a post.
-    *
-    * @param id      Post ID.
-    * @param comment Comment ID.
-    * @return If a post has been found and the comment has been deleted.
-    */
-  override def deleteComment(id: Int, comment: Int)(implicit ec: ExecutionContext): Future[Boolean] = update(id) { post =>
-    post.copy(comments = post.comments filterNot { _.id == comment })
+  override def delete(id: Int)(implicit ec: ExecutionContext): Future[Boolean] = {
+    // Create request.
+    val request = client.prepareDelete(index.write, Post.Type, id.toString)
+    // Execute request.
+    val response = request.execute
+    // Handle response.
+    response map { response => response.isFound }
   }
 
 }

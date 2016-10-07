@@ -27,14 +27,6 @@ trait PostDAO {
   def index(posts: Seq[Post])(implicit ec: ExecutionContext): Future[Boolean]
 
   /**
-    * Deletes a post by ID.
-    *
-    * @param id Post ID.
-    * @return If a post has been found and deleted.
-    */
-  def delete(id: Int)(implicit ec: ExecutionContext): Future[Boolean]
-
-  /**
     * Updates a post by providing an existing one to a function returning an updated one.
     *
     * @param id Post ID.
@@ -44,21 +36,11 @@ trait PostDAO {
   def update(id: Int)(f: Post => Post)(implicit ec: ExecutionContext): Future[Boolean]
 
   /**
-    * Indexes a comment for a post.
+    * Deletes a post by ID.
     *
-    * @param id      Post ID.
-    * @param comment Comment.
-    * @return If a post has been found and the comment has been indexed.
+    * @param id Post ID.
+    * @return If a post has been found and deleted.
     */
-  def indexComment(id: Int, comment: Comment)(implicit ec: ExecutionContext): Future[Boolean]
-
-  /**
-    * Deletes a comment of a post.
-    *
-    * @param id      Post ID.
-    * @param comment Comment ID.
-    * @return If a post has been found and the comment has been deleted.
-    */
-  def deleteComment(id: Int, comment: Int)(implicit ec: ExecutionContext): Future[Boolean]
+  def delete(id: Int)(implicit ec: ExecutionContext): Future[Boolean]
 
 }

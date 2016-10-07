@@ -6,6 +6,8 @@ import actors.CrawlerActor
 import akka.actor.ActorRef
 import akka.actor.ActorSystem
 import com.google.inject.AbstractModule
+import dao.comment.CommentDAO
+import dao.comment.ElasticCommentDAO
 import dao.post.ElasticPostDAO
 import dao.post.PostDAO
 import dao.tag.ElasticTagDAO
@@ -52,6 +54,8 @@ final class Module extends AbstractModule with AkkaGuiceSupport {
     bind(classOf[PostDAO]) to classOf[ElasticPostDAO]
     // Bind TagDAO to ElasticTagDAO
     bind(classOf[TagDAO]) to classOf[ElasticTagDAO]
+    // Bind CommentDAO to ElasticCommentDAO
+    bind(classOf[CommentDAO]) to classOf[ElasticCommentDAO]
 
     // Bind CrawlerActor.
     bindActor[CrawlerActor](CrawlerActor.Name)

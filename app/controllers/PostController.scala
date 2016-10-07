@@ -4,7 +4,6 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 import dao.post.PostDAO
-import models.Comment
 import models.Post
 import models.Posts
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
@@ -50,32 +49,6 @@ final class PostController @Inject()(postDAO: PostDAO) extends Controller {
     */
   def delete(id: Int) = Action.async {
     postDAO delete id map { deleted =>
-      Ok(Json.obj("deleted" -> deleted))
-    }
-  }
-
-  /**
-    * Indexes a comment for a post.
-    *
-    * @param id Post ID.
-    * @return If a post has been found and the comment has been indexed.
-    */
-  def indexComment(id: Int) = Action.async(parse.json[Comment]) { request =>
-    val comment = request.body
-    postDAO.indexComment(id, comment) map { indexed =>
-      Ok(Json.obj("indexed" -> indexed))
-    }
-  }
-
-  /**
-    * Deletes a comment of a post.
-    *
-    * @param id      Post ID.
-    * @param comment Comment ID.
-    * @return If a post has been found and the comment has been deleted.
-    */
-  def deleteComment(id: Int, comment: Int) = Action.async {
-    postDAO.deleteComment(id, comment) map { deleted =>
       Ok(Json.obj("deleted" -> deleted))
     }
   }
