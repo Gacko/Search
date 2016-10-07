@@ -24,7 +24,7 @@ final class ElasticPostDAO @Inject()(client: Client, index: Index, configuration
   /**
     * Maximum update retries.
     */
-  private val Retries = configuration getInt "update.retries" getOrElse 0
+  private val Retries = configuration getInt "post.index.retries" getOrElse 0
 
   /**
     * Retrieves a post by ID.
