@@ -1,5 +1,9 @@
-package models
+package models.post
 
+import models.info.Info
+import models.item.Item
+import models.post.comment.Comment
+import models.post.tag.Tag
 import play.api.libs.json.Json
 
 /**

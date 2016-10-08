@@ -1,6 +1,6 @@
-package dao.comment
+package dao.post.comment
 
-import models._
+import models.post.comment.Comment
 
 import scala.concurrent.ExecutionContext
 import scala.concurrent.Future

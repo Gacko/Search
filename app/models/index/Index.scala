@@ -1,10 +1,11 @@
-package models
+package models.index
 
 import java.text.SimpleDateFormat
 import java.util.Date
 import javax.inject.Inject
 import javax.inject.Singleton
 
+import models.post.Post
 import play.api.Configuration
 import play.api.libs.json.Json
 
@@ -17,7 +18,17 @@ final class Index @Inject()(configuration: Configuration) {
   /**
     * Base name.
     */
-  private val base = "posts"
+  private val Base = "posts"
+
+  /**
+    * Shard count.
+    */
+  private val Shards = configuration getInt "index.shards"
+
+  /**
+    * Replica count.
+    */
+  private val Replicas = configuration getInt "index.replicas"
 
   /**
     * Unique name with timestamp.
@@ -26,25 +37,25 @@ final class Index @Inject()(configuration: Configuration) {
     */
   def name: String = {
     val sdf = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss")
-    val timestamp = sdf.format(new Date())
+    val timestamp = sdf format new Date
 
-    s"$base-$timestamp"
+    s"$Base-$timestamp"
   }
 
   /**
     * Search alias.
     */
-  val read = s"$base-read"
+  val read = s"$Base-read"
 
   /**
     * Index alias.
     */
-  val write = s"$base-write"
+  val write = s"$Base-write"
 
   /**
     * Backup alias.
     */
-  val backup = s"$base-backup"
+  val backup = s"$Base-backup"
 
   /**
     * Index settings.
@@ -52,8 +63,8 @@ final class Index @Inject()(configuration: Configuration) {
   val settings = Json.stringify(
     Json.obj(
       "index" -> Json.obj(
-        "number_of_shards" -> configuration.getInt("index.shards"),
-        "number_of_replicas" -> configuration.getInt("index.replicas")
+        "number_of_shards" -> Shards,
+        "number_of_replicas" -> Replicas
       ),
       "analysis" -> Json.obj(
         "analyzer" -> Json.obj(

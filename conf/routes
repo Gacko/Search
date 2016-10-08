@@ -1,24 +1,24 @@
 # Search
-GET           /search                             controllers.SearchController.search(term: String)
+GET           /search                          controllers.SearchController.search(term: String)
 
 # Post
-POST          /posts                              controllers.PostController.index
-POST          /posts/bulk                         controllers.PostController.bulk
-DELETE        /posts/:id                          controllers.PostController.delete(id: Int)
+POST          /posts                           controllers.PostController.index
+POST          /posts/bulk                      controllers.PostController.bulk
+DELETE        /posts/:id                       controllers.PostController.delete(id: Int)
 
 # Tag
-POST          /posts/:post/tags                   controllers.TagController.index(post: Int)
-DELETE        /posts/:post/tags/:id               controllers.TagController.delete(post: Int, id: Int)
+POST          /posts/:post/tags                controllers.TagController.index(post: Int)
+DELETE        /posts/:post/tags/:id            controllers.TagController.delete(post: Int, id: Int)
 
 # Comment
-POST          /posts/:post/comments               controllers.CommentController.index(post: Int)
-DELETE        /posts/:post/comments/:id           controllers.CommentController.delete(post: Int, id: Int)
+POST          /posts/:post/comments            controllers.CommentController.index(post: Int)
+DELETE        /posts/:post/comments/:id        controllers.CommentController.delete(post: Int, id: Int)
 
 # Index
-POST          /index                              controllers.IndexController.switch
-DELETE        /index                              controllers.IndexController.rollback
+POST          /index                           controllers.IndexController.switch
+DELETE        /index                           controllers.IndexController.rollback
 
 # Crawler
-POST          /crawler/start                      controllers.CrawlerController.start
-POST          /crawler/stop                       controllers.CrawlerController.stop
-GET           /crawler/status                     controllers.CrawlerController.status
+POST          /crawler/start                   controllers.CrawlerController.start
+POST          /crawler/stop                    controllers.CrawlerController.stop
+GET           /crawler/status                  controllers.CrawlerController.status

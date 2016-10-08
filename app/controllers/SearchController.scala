@@ -3,12 +3,12 @@ package controllers
 import javax.inject.Inject
 import javax.inject.Singleton
 
-import models.Posts
+import models.post.Posts
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.json.Json
 import play.api.mvc.Action
 import play.api.mvc.Controller
-import services.SearchService
+import services.search.SearchService
 
 /**
   * Marco Ebert 11.07.16

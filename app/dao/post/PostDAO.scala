@@ -1,6 +1,6 @@
 package dao.post
 
-import models._
+import models.post.Post
 
 import scala.concurrent.ExecutionContext
 import scala.concurrent.Future

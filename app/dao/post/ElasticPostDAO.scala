@@ -3,7 +3,8 @@ package dao.post
 import javax.inject.Inject
 import javax.inject.Singleton
 
-import models._
+import models.index.Index
+import models.post.Post
 import org.elasticsearch.action.index.IndexRequestBuilder
 import org.elasticsearch.client.Client
 import org.elasticsearch.index.engine.VersionConflictEngineException

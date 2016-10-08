@@ -3,13 +3,13 @@ package services
 import javax.inject.Inject
 import javax.inject.Singleton
 
-import models.Index
+import models.index.Index
 import org.elasticsearch.client.Client
 import play.api.Logger
-import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import util.Futures._
 
 import scala.collection.JavaConversions._
+import scala.concurrent.ExecutionContext
 import scala.concurrent.Future
 
 /**
@@ -23,7 +23,7 @@ final class IndexService @Inject()(client: Client, index: Index) {
     *
     * @return Index name.
     */
-  private def create: Future[String] = {
+  private def create(implicit ec: ExecutionContext): Future[String] = {
     val name = index.name
     Logger.info(s"IndexService::create: Creating index '$name'.")
 
@@ -47,7 +47,7 @@ final class IndexService @Inject()(client: Client, index: Index) {
     * @param name Index name.
     * @return Deletion status.
     */
-  private def delete(name: String): Future[Boolean] = {
+  private def delete(name: String)(implicit ec: ExecutionContext): Future[Boolean] = {
     Logger.info(s"IndexService::delete: Deleting index '$name'.")
     val request = client.admin().indices().prepareDelete(name)
     val response = request.execute()
@@ -62,7 +62,7 @@ final class IndexService @Inject()(client: Client, index: Index) {
     *
     * @return Index names by alias.
     */
-  private def aliases: Future[Map[String, String]] = {
+  private def aliases(implicit ec: ExecutionContext): Future[Map[String, String]] = {
     val request = client.admin().indices().prepareGetAliases()
     val response = request.execute()
     response.map { response =>
@@ -85,7 +85,7 @@ final class IndexService @Inject()(client: Client, index: Index) {
     * @param remove Index to remove alias from.
     * @return Alias status.
     */
-  private def setAlias(name: String, alias: String, remove: Option[String]): Future[Boolean] = {
+  private def setAlias(name: String, alias: String, remove: Option[String])(implicit ec: ExecutionContext): Future[Boolean] = {
     Logger.info(s"IndexService::setAlias: Adding alias '$alias' to index '$name'.")
     val request = client.admin().indices().prepareAliases()
 
@@ -110,7 +110,7 @@ final class IndexService @Inject()(client: Client, index: Index) {
     *
     * @return
     */
-  def switch: Future[Boolean] = {
+  def switch(implicit ec: ExecutionContext): Future[Boolean] = {
     Logger.info(s"IndexService::switch: Switching indices.")
     aliases.flatMap { aliases =>
       val read = aliases.get(index.read)
@@ -148,7 +148,7 @@ final class IndexService @Inject()(client: Client, index: Index) {
     *
     * @return
     */
-  def rollback: Future[Boolean] = {
+  def rollback(implicit ec: ExecutionContext): Future[Boolean] = {
     Logger.info(s"IndexService::rollback: Rolling back indices.")
     aliases.flatMap { aliases =>
       val read = aliases.get(index.read)

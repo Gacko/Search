@@ -1,4 +1,4 @@
-package models
+package models.item
 
 import play.api.libs.json.JsValue
 import play.api.libs.json.Json

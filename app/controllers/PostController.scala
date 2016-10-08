@@ -4,8 +4,8 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 import dao.post.PostDAO
-import models.Post
-import models.Posts
+import models.post.Post
+import models.post.Posts
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.json.Json
 import play.api.mvc.Action
@@ -15,7 +15,7 @@ import play.api.mvc.Controller
   * Marco Ebert 20.05.16
   */
 @Singleton
-final class PostController @Inject()(postDAO: PostDAO) extends Controller {
+final class PostController @Inject()(dao: PostDAO) extends Controller {
 
   /**
     * Indexes a post.
@@ -24,7 +24,7 @@ final class PostController @Inject()(postDAO: PostDAO) extends Controller {
     */
   def index = Action.async(parse.json[Post]) { request =>
     val post = request.body
-    postDAO index post map { indexed =>
+    dao index post map { indexed =>
       Ok(Json.obj("indexed" -> indexed))
     }
   }
@@ -36,7 +36,7 @@ final class PostController @Inject()(postDAO: PostDAO) extends Controller {
     */
   def bulk = Action.async(parse.json[Posts]) { request =>
     val posts = request.body.posts
-    postDAO index posts map { indexed =>
+    dao index posts map { indexed =>
       Ok(Json.obj("indexed" -> indexed))
     }
   }
@@ -48,7 +48,7 @@ final class PostController @Inject()(postDAO: PostDAO) extends Controller {
     * @return If a post has been found and deleted.
     */
   def delete(id: Int) = Action.async {
-    postDAO delete id map { deleted =>
+    dao delete id map { deleted =>
       Ok(Json.obj("deleted" -> deleted))
     }
   }
