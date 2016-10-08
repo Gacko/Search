@@ -77,32 +77,6 @@ final class CrawlerService @Inject()(ws: WSClient, configuration: Configuration)
   }
 
   /**
-    * Combines an item and its info into a post.
-    *
-    * @param item Item.
-    * @param info Its info.
-    * @return Post combined of item and info.
-    */
-  def post(item: Item, info: Info): Post = {
-    Post(
-      id = item.id,
-      promoted = item.promoted,
-      created = item.created,
-      image = item.image,
-      thumb = item.thumb,
-      fullsize = item.fullsize,
-      width = item.width,
-      height = item.height,
-      audio = item.audio,
-      source = item.source,
-      flags = item.flags,
-      user = item.user,
-      tags = info.tags,
-      comments = info.comments
-    )
-  }
-
-  /**
     * Fetches info for given items and combines them to posts.
     *
     * @param items Items to fetch info for.
@@ -114,7 +88,7 @@ final class CrawlerService @Inject()(ws: WSClient, configuration: Configuration)
         posts <- posts
         info <- info(item.id)
       } yield {
-        posts :+ post(item, info)
+        posts :+ Post.fromItem(item, info)
       }
     }
   }
