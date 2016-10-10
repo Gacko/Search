@@ -19,7 +19,7 @@ final class RestItemDAO @Inject()(configuration: Configuration, ws: WSClient) ex
   /**
     * Items URL.
     */
-  private val Items = configuration getString "item.url" getOrElse "http://pr0gramm.com/api/items/get"
+  private val URL = configuration getString "item.url" getOrElse "http://pr0gramm.com/api/items/get"
 
   /**
     * Fetches items by age, flags and promotion status.
@@ -32,7 +32,7 @@ final class RestItemDAO @Inject()(configuration: Configuration, ws: WSClient) ex
     */
   override def find(newer: Option[Int], older: Option[Int], flags: Option[Byte], promoted: Option[Boolean])(implicit ec: ExecutionContext): Future[Items] = {
     // Prepare URL.
-    val url = ws url Items
+    val url = ws url URL
     // Build request with parameters if exist.
     val request = Seq(
       newer map { n => "newer" -> n.toString },

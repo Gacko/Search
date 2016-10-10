@@ -19,7 +19,7 @@ final class RestInfoDAO @Inject()(configuration: Configuration, ws: WSClient) ex
   /**
     * Info URL.
     */
-  private val Info = configuration getString "info.url" getOrElse "http://pr0gramm.com/api/items/info"
+  private val URL = configuration getString "info.url" getOrElse "http://pr0gramm.com/api/items/info"
 
   /**
     * Fetches an info by ID.
@@ -29,7 +29,7 @@ final class RestInfoDAO @Inject()(configuration: Configuration, ws: WSClient) ex
     */
   override def get(id: Int)(implicit ec: ExecutionContext): Future[Info] = {
     // Prepare URL and build request with parameter.
-    val request = ws url Info withQueryString "itemId" -> id.toString
+    val request = ws url URL withQueryString "itemId" -> id.toString
 
     // Execute request.
     request.get map { response =>
