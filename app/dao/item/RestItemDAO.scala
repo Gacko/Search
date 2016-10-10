@@ -19,7 +19,7 @@ final class RestItemDAO @Inject()(configuration: Configuration, ws: WSClient) ex
   /**
     * Items URL.
     */
-  private val Items = configuration getString "url.items" getOrElse "http://pr0gramm.com/api/items/get"
+  private val Items = configuration getString "item.url" getOrElse "http://pr0gramm.com/api/items/get"
 
   /**
     * Fetches items by age, flags and promotion status.

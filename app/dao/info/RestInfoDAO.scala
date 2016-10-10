@@ -19,7 +19,7 @@ final class RestInfoDAO @Inject()(configuration: Configuration, ws: WSClient) ex
   /**
     * Info URL.
     */
-  private val Info = configuration getString "url.info" getOrElse "http://pr0gramm.com/api/items/info"
+  private val Info = configuration getString "info.url" getOrElse "http://pr0gramm.com/api/items/info"
 
   /**
     * Fetches an info by ID.
