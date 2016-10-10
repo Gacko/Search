@@ -19,6 +19,8 @@ import dao.post.tag.TagDAO
 import play.api.inject.ApplicationLifecycle
 import play.api.libs.concurrent.AkkaGuiceSupport
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
+import services.index.ElasticIndexService
+import services.index.IndexService
 import services.search.ElasticSearchService
 import services.search.SearchService
 
@@ -68,6 +70,8 @@ final class Module extends AbstractModule with AkkaGuiceSupport {
     // Bind InfoDAO to RestInfoDAO.
     bind(classOf[InfoDAO]) to classOf[RestInfoDAO]
 
+    // Bind IndexService to ElasticIndexService.
+    bind(classOf[IndexService]) to classOf[ElasticIndexService]
     // Bind SearchService to ElasticSearchService.
     bind(classOf[SearchService]) to classOf[ElasticSearchService]
 
