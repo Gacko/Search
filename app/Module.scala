@@ -44,9 +44,7 @@ sealed class Schedule @Inject()(system: ActorSystem, @Named(CrawlerActor.Name) c
 
     // Cancel tasks on application stop.
     lifecycle addStopHook { () =>
-      Future successful {
-        task.cancel()
-      }
+      Future successful task.cancel()
     }
   }
 

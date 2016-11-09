@@ -24,8 +24,7 @@ sealed class StartStop @Inject()(lifecycle: ApplicationLifecycle, client: Client
     * Close Elasticsearch connection on application stop.
     */
   lifecycle.addStopHook { () =>
-    client.close()
-    Future.successful(())
+    Future successful client.close()
   }
 
 }
