@@ -23,12 +23,12 @@ final class Index @Inject()(configuration: Configuration) {
   /**
     * Shard count.
     */
-  private val Shards = configuration getInt "index.shards"
+  private val Shards = configuration getInt "index.shards" getOrElse 1
 
   /**
     * Replica count.
     */
-  private val Replicas = configuration getInt "index.replicas"
+  private val Replicas = configuration getInt "index.replicas" getOrElse 0
 
   /**
     * Unique name with timestamp.
