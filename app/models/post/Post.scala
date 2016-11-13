@@ -1,7 +1,5 @@
 package models.post
 
-import models.info.Info
-import models.item.Item
 import models.post.comment.Comment
 import models.post.tag.Tag
 import play.api.libs.json.Json
@@ -185,31 +183,5 @@ object Post {
       )
     )
   )
-
-  /**
-    * Creates a post from an item and an info.
-    *
-    * @param item Item.
-    * @param info Info.
-    * @return Post.
-    */
-  def fromItem(item: Item, info: Info): Post = {
-    Post(
-      id = item.id,
-      promoted = item.promoted,
-      created = item.created,
-      image = item.image,
-      thumb = item.thumb,
-      fullsize = item.fullsize,
-      width = item.width,
-      height = item.height,
-      audio = item.audio,
-      source = item.source,
-      flags = item.flags,
-      user = item.user,
-      tags = info.tags,
-      comments = info.comments
-    )
-  }
 
 }

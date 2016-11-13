@@ -8,9 +8,11 @@ import org.elasticsearch.client.Client
 import org.elasticsearch.client.transport.TransportClient
 import org.elasticsearch.common.settings.Settings
 import org.elasticsearch.common.transport.InetSocketTransportAddress
+import org.elasticsearch.node.Node
 import org.elasticsearch.node.NodeBuilder
 import play.api.Configuration
 import play.api.Environment
+import play.api.Logger
 import play.api.inject.ApplicationLifecycle
 
 import scala.collection.JavaConversions._
@@ -20,7 +22,19 @@ import scala.concurrent.Future
   * Marco Ebert 18.05.2016
   */
 @Singleton
-sealed class StartStop @Inject()(lifecycle: ApplicationLifecycle, client: Client) {
+sealed class Shutdown @Inject()(lifecycle: ApplicationLifecycle, node: Node) {
+
+  /**
+    * Shutdown Elasticsearch node on application stop.
+    */
+  lifecycle addStopHook { () =>
+    Future successful node.close
+  }
+
+}
+
+@Singleton
+sealed class Disconnect @Inject()(lifecycle: ApplicationLifecycle, client: Client) {
 
   /**
     * Close Elasticsearch connection on application stop.
@@ -49,9 +63,9 @@ final class Elasticsearch(environment: Environment, configuration: Configuration
   /**
     * Starts a local cluster and creates a client connected to it.
     *
-    * @return Client connected to local cluster.
+    * @return Client connected to a local cluster.
     */
-  private def local: Client = {
+  private def local: (Node, Client) = {
     val builder = NodeBuilder.nodeBuilder
     // Setup home path.
     builder settings settings("path.home", environment.rootPath.getAbsolutePath)
@@ -64,16 +78,16 @@ final class Elasticsearch(environment: Environment, configuration: Configuration
       case Some(cluster) => builder clusterName cluster
       case None =>
     }
-    // Start node and return client.
-    builder.node.client
+    // Start node.
+    val node = builder.node
+    val client = node.client
+    (node, client)
   }
 
   /**
     * Creates a client connected to the configured Elasticsearch cluster.
     *
-    * Configured by cluster.name and cluster.nodes.
-    *
-    * @return
+    * @return Client connected to a remote cluster.
     */
   private def transport: Client = {
     val builder = TransportClient.builder
@@ -102,29 +116,26 @@ final class Elasticsearch(environment: Environment, configuration: Configuration
       val address = new InetSocketTransportAddress(InetAddress getByName host, port)
       // Add transport address.
       client addTransportAddress address
+      Logger info s"Elasticsearch::transport: Connected to $address."
     }
     // Return client.
     client
   }
 
   /**
-    * Creates a client depending on cluster.local.
-    *
-    * @return Client.
-    */
-  private def client: Client = {
-    configuration getBoolean "cluster.local" match {
-      case Some(true) => local
-      case _ => transport
-    }
-  }
-
-  /**
     * Connect to Elasticsearch and configure bindings.
     */
   override def configure(): Unit = {
-    bind(classOf[Client]) toInstance client
-    bind(classOf[StartStop]).asEagerSingleton()
+    configuration getBoolean "cluster.local" match {
+      case Some(true) =>
+        val (node, client) = local
+        bind(classOf[Node]) toInstance node
+        bind(classOf[Client]) toInstance client
+        bind(classOf[Shutdown]).asEagerSingleton()
+      case _ =>
+        bind(classOf[Client]) toInstance transport
+        bind(classOf[Disconnect]).asEagerSingleton()
+    }
   }
 
 }

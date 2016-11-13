@@ -16,6 +16,6 @@ trait InfoDAO {
     * @param id Item ID.
     * @return Info by item ID.
     */
-  def get(id: Int)(implicit ec: ExecutionContext): Future[Info]
+  def get(id: Int)(implicit ec: ExecutionContext): Future[Option[Info]]
 
 }

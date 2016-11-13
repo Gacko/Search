@@ -123,7 +123,7 @@ final class ElasticPostDAO @Inject()(client: Client, index: Index, configuration
     // Execute request.
     val response = bulk.execute
     // Handle response.
-    response map { response => response.hasFailures }
+    response map { response => !response.hasFailures }
   }
 
   /**

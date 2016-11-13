@@ -27,14 +27,16 @@ final class RestInfoDAO @Inject()(configuration: Configuration, ws: WSClient) ex
     * @param id Item ID.
     * @return Info by item ID.
     */
-  override def get(id: Int)(implicit ec: ExecutionContext): Future[Info] = {
+  override def get(id: Int)(implicit ec: ExecutionContext): Future[Option[Info]] = {
     // Prepare URL and build request with parameter.
     val request = ws url URL withQueryString "itemId" -> id.toString
 
     // Execute request.
     request.get map { response =>
       // Extract info from response.
-      response.json.validate[Info].get
+      response.json.validate[Info].asOpt
+    } recover {
+      case _ => None
     }
   }
 
