@@ -1,4 +1,5 @@
 import java.net.InetAddress
+import java.net.URI
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -7,6 +8,7 @@ import org.elasticsearch.client.Client
 import org.elasticsearch.client.transport.TransportClient
 import org.elasticsearch.common.settings.Settings
 import org.elasticsearch.common.transport.InetSocketTransportAddress
+import org.elasticsearch.node.NodeBuilder
 import play.api.Configuration
 import play.api.Environment
 import play.api.inject.ApplicationLifecycle
@@ -23,8 +25,8 @@ sealed class StartStop @Inject()(lifecycle: ApplicationLifecycle, client: Client
   /**
     * Close Elasticsearch connection on application stop.
     */
-  lifecycle.addStopHook { () =>
-    Future successful client.close()
+  lifecycle addStopHook { () =>
+    Future successful client.close
   }
 
 }
@@ -32,47 +34,96 @@ sealed class StartStop @Inject()(lifecycle: ApplicationLifecycle, client: Client
 final class Elasticsearch(environment: Environment, configuration: Configuration) extends AbstractModule {
 
   /**
-    * Creates an instance of Client for Elasticsearch operations.
+    * Pairs key and value into a single entry settings object.
+    *
+    * @param key   Key.
+    * @param value Value.
+    * @return Settings.
+    */
+  private def settings(key: String, value: String): Settings = {
+    val builder = Settings.builder
+    builder.put(key, value)
+    builder.build
+  }
+
+  /**
+    * Starts a local cluster and creates a client connected to it.
+    *
+    * @return Client connected to local cluster.
+    */
+  private def local: Client = {
+    val builder = NodeBuilder.nodeBuilder
+    // Setup home path.
+    builder settings settings("path.home", environment.rootPath.getAbsolutePath)
+    // Setup node role.
+    builder client false
+    builder data true
+    builder local true
+    // Set cluster name if defined.
+    configuration getString "cluster.name" match {
+      case Some(cluster) => builder clusterName cluster
+      case None =>
+    }
+    // Start node and return client.
+    builder.node.client
+  }
+
+  /**
+    * Creates a client connected to the configured Elasticsearch cluster.
     *
     * Configured by cluster.name and cluster.nodes.
     *
     * @return
     */
-  private def connect: Client = {
-    val settings = Settings.builder()
-
+  private def transport: Client = {
+    val builder = TransportClient.builder
+    // Set cluster name if defined.
     configuration getString "cluster.name" match {
-      case Some(cluster) => settings.put("cluster.name", cluster)
+      case Some(cluster) => builder settings settings("cluster.name", cluster)
       case None =>
     }
+    // Build client.
+    val client = builder.build
 
-    val client = TransportClient.builder().settings(settings).build()
-
+    // Add transport addresses.
     for {
-      nodes <- configuration.getStringList("cluster.nodes")
+      nodes <- configuration getStringList "cluster.nodes"
       node <- nodes
     } {
-      val split = node.split(":", 2)
-
-      val host = split(0)
-      val port = split.length match {
-        case 2 => split(1).toInt
-        case 1 => 9300
+      // Parse node string into URI.
+      val uri = new URI(node)
+      // Get host and port.
+      val host = uri.getHost
+      val port = uri.getPort match {
+        case -1 => 9300
+        case p => p
       }
-
-      val address = new InetSocketTransportAddress(InetAddress.getByName(host), port)
-      client.addTransportAddress(address)
+      // Create transport address.
+      val address = new InetSocketTransportAddress(InetAddress getByName host, port)
+      // Add transport address.
+      client addTransportAddress address
     }
-
+    // Return client.
     client
+  }
+
+  /**
+    * Creates a client depending on cluster.local.
+    *
+    * @return Client.
+    */
+  private def client: Client = {
+    configuration getBoolean "cluster.local" match {
+      case Some(true) => local
+      case _ => transport
+    }
   }
 
   /**
     * Connect to Elasticsearch and configure bindings.
     */
   override def configure(): Unit = {
-    val client = connect
-    bind(classOf[Client]).toInstance(client)
+    bind(classOf[Client]) toInstance client
     bind(classOf[StartStop]).asEagerSingleton()
   }
 
