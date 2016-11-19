@@ -1,10 +1,10 @@
-package dao.post.comment
+package dao.comment
 
 import javax.inject.Inject
 import javax.inject.Singleton
 
 import dao.post.PostDAO
-import models.post.comment.Comment
+import models.comment.Comment
 
 import scala.concurrent.ExecutionContext
 import scala.concurrent.Future

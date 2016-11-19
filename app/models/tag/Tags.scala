@@ -1,4 +1,4 @@
-package models.post.tag
+package models.tag
 
 import play.api.libs.json.Json
 

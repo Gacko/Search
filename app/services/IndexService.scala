@@ -1,4 +1,4 @@
-package services.index
+package services
 
 import scala.concurrent.ExecutionContext
 import scala.concurrent.Future

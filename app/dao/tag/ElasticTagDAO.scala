@@ -1,10 +1,10 @@
-package dao.post.tag
+package dao.tag
 
 import javax.inject.Inject
 import javax.inject.Singleton
 
 import dao.post.PostDAO
-import models.post.tag.Tag
+import models.tag.Tag
 
 import scala.concurrent.ExecutionContext
 import scala.concurrent.Future

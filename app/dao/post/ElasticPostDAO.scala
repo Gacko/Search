@@ -8,6 +8,9 @@ import models.post.Post
 import org.elasticsearch.action.index.IndexRequestBuilder
 import org.elasticsearch.client.Client
 import org.elasticsearch.index.engine.VersionConflictEngineException
+import org.elasticsearch.index.query.MatchQueryBuilder.Operator
+import org.elasticsearch.index.query.QueryBuilders
+import org.elasticsearch.search.sort.SortOrder
 import play.api.Configuration
 import play.api.Logger
 import play.api.libs.json.Json
@@ -26,6 +29,11 @@ final class ElasticPostDAO @Inject()(client: Client, index: Index, configuration
     * Maximum update retries.
     */
   private val Retries = configuration getInt "post.index.retries" getOrElse 0
+
+  /**
+    * Search result size.
+    */
+  private val Size = 100
 
   /**
     * Retrieves a post by ID.
@@ -80,7 +88,7 @@ final class ElasticPostDAO @Inject()(client: Client, index: Index, configuration
   @throws[VersionConflictEngineException]
   private def index(post: Post, version: Long)(implicit ec: ExecutionContext): Future[Boolean] = {
     // Build request.
-    val request = this.request(post)
+    val request = this request post
     // Set version.
     request setVersion version
     // Execute request.
@@ -97,7 +105,7 @@ final class ElasticPostDAO @Inject()(client: Client, index: Index, configuration
     */
   override def index(post: Post)(implicit ec: ExecutionContext): Future[Boolean] = {
     // Build request.
-    val request = this.request(post)
+    val request = this request post
     // Execute request.
     val response = request.execute
     // Handle response.
@@ -116,7 +124,7 @@ final class ElasticPostDAO @Inject()(client: Client, index: Index, configuration
     // Add a index request for every post.
     for (post <- posts) {
       // Build index request.
-      val request = this.request(post)
+      val request = this request post
       // Add index request to bulk request.
       bulk add request
     }
@@ -124,6 +132,46 @@ final class ElasticPostDAO @Inject()(client: Client, index: Index, configuration
     val response = bulk.execute
     // Handle response.
     response map { response => !response.hasFailures }
+  }
+
+  /**
+    * Finds posts by term.
+    *
+    * @param term Search term.
+    * @return Posts containing term.
+    */
+  override def find(term: String)(implicit ec: ExecutionContext): Future[Seq[Post]] = {
+    // Prepare request.
+    val request = client prepareSearch index.read
+    // Set type.
+    request setTypes Post.Type
+    // Set size.
+    request setSize Size
+    // Add sort.
+    request.addSort(Post.Created, SortOrder.DESC)
+
+    // Create query.
+    val query = QueryBuilders.matchQuery(Post.FlatTags, term)
+    // Set operator.
+    query operator Operator.AND
+
+    // Set query to request.
+    request setQuery query
+
+    // Execute request.
+    val response = request.execute
+    // Handle response.
+    response.map { response =>
+      // Parse hits into posts.
+      for (hit <- response.getHits.hits) yield {
+        // Get source from hit.
+        val source = hit.source
+        // Parse JSON from source.
+        val json = Json parse source
+        // Validate post.
+        json.validate[Post].get
+      }
+    }
   }
 
   /**
@@ -141,7 +189,7 @@ final class ElasticPostDAO @Inject()(client: Client, index: Index, configuration
           index(updated, version) recoverWith {
             case v: VersionConflictEngineException if retries > 0 => update(id, retries - 1)(f)
             case v: VersionConflictEngineException =>
-              Logger.error(s"PostService::update: Failed to update post $id due to conflicting versions. No more retries left.")
+              Logger error s"ElasticPostDAO::update: Failed to update post $id due to conflicting versions. No more retries left."
               Future successful false
             case e: Throwable => throw e
           }

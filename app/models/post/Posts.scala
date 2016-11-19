@@ -12,6 +12,6 @@ object Posts {
   /**
     * Implicit JSON format.
     */
-  implicit val Reads = Json.format[Posts]
+  implicit val Format = Json.format[Posts]
 
 }

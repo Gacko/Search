@@ -1,4 +1,4 @@
-package models.post.comment
+package models.comment
 
 import play.api.libs.json.Json
 

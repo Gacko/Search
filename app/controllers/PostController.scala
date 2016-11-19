@@ -42,6 +42,24 @@ final class PostController @Inject()(dao: PostDAO) extends Controller {
   }
 
   /**
+    * Finds posts by term.
+    *
+    * @param term Search term.
+    * @return Posts containing term.
+    */
+  def find(term: String) = Action.async {
+    // Find posts by term.
+    dao find term map { posts =>
+      // Wrap posts.
+      val wrapper = Posts(posts)
+      // Convert posts into JSON.
+      val json = Json toJson wrapper
+      // Return posts as JSON.
+      Ok(json)
+    }
+  }
+
+  /**
     * Deletes a post by ID.
     *
     * @param id Post ID.

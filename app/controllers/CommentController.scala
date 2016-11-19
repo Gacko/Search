@@ -3,8 +3,8 @@ package controllers
 import javax.inject.Inject
 import javax.inject.Singleton
 
-import dao.post.comment.CommentDAO
-import models.post.comment.Comment
+import dao.comment.CommentDAO
+import models.comment.Comment
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.json.Json
 import play.api.mvc.Action

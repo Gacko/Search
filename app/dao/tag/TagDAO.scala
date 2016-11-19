@@ -1,6 +1,6 @@
-package dao.post.tag
+package dao.tag
 
-import models.post.tag.Tag
+import models.tag.Tag
 
 import scala.concurrent.ExecutionContext
 import scala.concurrent.Future

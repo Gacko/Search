@@ -3,8 +3,8 @@ package controllers
 import javax.inject.Inject
 import javax.inject.Singleton
 
-import dao.post.tag.TagDAO
-import models.post.tag.Tags
+import dao.tag.TagDAO
+import models.tag.Tags
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.json.Json
 import play.api.mvc.Action
