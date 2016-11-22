@@ -15,7 +15,6 @@ import play.api.Environment
 import play.api.Logger
 import play.api.inject.ApplicationLifecycle
 
-import scala.collection.JavaConversions._
 import scala.concurrent.Future
 
 /**
@@ -101,7 +100,7 @@ final class Elasticsearch(environment: Environment, configuration: Configuration
 
     // Add transport addresses.
     for {
-      nodes <- configuration getStringList "cluster.nodes"
+      nodes <- configuration getStringSeq "cluster.nodes"
       node <- nodes
     } {
       // Parse node string into URI.
