@@ -6,6 +6,7 @@ import javax.inject.Singleton
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.json.Json
 import play.api.mvc.Action
+import play.api.mvc.AnyContent
 import play.api.mvc.Controller
 import services.IndexService
 
@@ -20,7 +21,7 @@ final class IndexController @Inject()(service: IndexService) extends Controller 
     *
     * @return
     */
-  def switch = Action.async {
+  def switch: Action[AnyContent] = Action.async {
     service.switch map { switched =>
       Ok(Json.obj("switched" -> switched))
     }
@@ -31,7 +32,7 @@ final class IndexController @Inject()(service: IndexService) extends Controller 
     *
     * @return
     */
-  def rollback = Action.async {
+  def rollback: Action[AnyContent] = Action.async {
     service.rollback map { rolledBack =>
       Ok(Json.obj("rolledBack" -> rolledBack))
     }

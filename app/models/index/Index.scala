@@ -60,7 +60,7 @@ final class Index @Inject()(configuration: Configuration) {
   /**
     * Index settings.
     */
-  val settings = Json.stringify(
+  val settings: String = Json.stringify(
     Json.obj(
       "index" -> Json.obj(
         "number_of_shards" -> Shards,

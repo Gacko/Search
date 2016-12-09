@@ -1,5 +1,6 @@
 package models.tag
 
+import play.api.libs.json.Format
 import play.api.libs.json.Json
 
 /**
@@ -12,7 +13,7 @@ object Tag {
   /**
     * Implicit JSON format.
     */
-  implicit val Format = Json.format[Tag]
+  implicit val Format: Format[Tag] = Json.format[Tag]
 
   /**
     * ID field name.

@@ -1,6 +1,7 @@
 package models.tag
 
 import play.api.libs.json.Json
+import play.api.libs.json.Reads
 
 /**
   * Marco Ebert 23.06.16
@@ -12,6 +13,6 @@ object Tags {
   /**
     * Implicit JSON reader.
     */
-  implicit val Reads = Json.reads[Tags]
+  implicit val Reads: Reads[Tags] = Json.reads[Tags]
 
 }

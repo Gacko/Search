@@ -1,5 +1,6 @@
 package models.post
 
+import play.api.libs.json.Format
 import play.api.libs.json.Json
 
 /**
@@ -12,6 +13,6 @@ object Posts {
   /**
     * Implicit JSON format.
     */
-  implicit val Format = Json.format[Posts]
+  implicit val Format: Format[Posts] = Json.format[Posts]
 
 }

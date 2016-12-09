@@ -9,6 +9,7 @@ import models.post.Posts
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.json.Json
 import play.api.mvc.Action
+import play.api.mvc.AnyContent
 import play.api.mvc.Controller
 
 /**
@@ -22,7 +23,7 @@ final class PostController @Inject()(dao: PostDAO) extends Controller {
     *
     * @return If the post has been indexed.
     */
-  def index = Action.async(parse.json[Post]) { request =>
+  def index: Action[Post] = Action.async(parse.json[Post]) { request =>
     val post = request.body
     dao index post map { indexed =>
       Ok(Json.obj("indexed" -> indexed))
@@ -34,7 +35,7 @@ final class PostController @Inject()(dao: PostDAO) extends Controller {
     *
     * @return If the posts have been indexed.
     */
-  def bulk = Action.async(parse.json[Posts]) { request =>
+  def bulk: Action[Posts] = Action.async(parse.json[Posts]) { request =>
     val posts = request.body.posts
     dao index posts map { indexed =>
       Ok(Json.obj("indexed" -> indexed))
@@ -47,7 +48,7 @@ final class PostController @Inject()(dao: PostDAO) extends Controller {
     * @param term Search term.
     * @return Posts containing term.
     */
-  def find(term: String) = Action.async {
+  def find(term: String): Action[AnyContent] = Action.async {
     // Find posts by term.
     dao find term map { posts =>
       // Wrap posts.
@@ -65,7 +66,7 @@ final class PostController @Inject()(dao: PostDAO) extends Controller {
     * @param id Post ID.
     * @return If a post has been found and deleted.
     */
-  def delete(id: Int) = Action.async {
+  def delete(id: Int): Action[AnyContent] = Action.async {
     dao delete id map { deleted =>
       Ok(Json.obj("deleted" -> deleted))
     }

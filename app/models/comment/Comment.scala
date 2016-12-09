@@ -1,5 +1,6 @@
 package models.comment
 
+import play.api.libs.json.Format
 import play.api.libs.json.Json
 
 /**
@@ -12,7 +13,7 @@ object Comment {
   /**
     * Implicit JSON format.
     */
-  implicit val Format = Json.format[Comment]
+  implicit val Format: Format[Comment] = Json.format[Comment]
 
   /**
     * ID field name.

@@ -8,6 +8,7 @@ import models.comment.Comment
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.json.Json
 import play.api.mvc.Action
+import play.api.mvc.AnyContent
 import play.api.mvc.Controller
 
 /**
@@ -22,7 +23,7 @@ final class CommentController @Inject()(dao: CommentDAO) extends Controller {
     * @param post Post ID.
     * @return If a post has been found and the comment has been indexed.
     */
-  def index(post: Int) = Action.async(parse.json[Comment]) { request =>
+  def index(post: Int): Action[Comment] = Action.async(parse.json[Comment]) { request =>
     val comment = request.body
     dao.index(post, comment) map { indexed =>
       Ok(Json.obj("indexed" -> indexed))
@@ -36,7 +37,7 @@ final class CommentController @Inject()(dao: CommentDAO) extends Controller {
     * @param id   Comment ID.
     * @return If a post has been found and the comment has been deleted.
     */
-  def delete(post: Int, id: Int) = Action.async {
+  def delete(post: Int, id: Int): Action[AnyContent] = Action.async {
     dao.delete(post, id) map { deleted =>
       Ok(Json.obj("deleted" -> deleted))
     }

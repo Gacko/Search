@@ -2,6 +2,7 @@ package models.post
 
 import models.comment.Comment
 import models.tag.Tag
+import play.api.libs.json.Format
 import play.api.libs.json.Json
 
 /**
@@ -29,7 +30,7 @@ object Post {
   /**
     * Implicit JSON format.
     */
-  implicit val Format = Json.format[Post]
+  implicit val Format: Format[Post] = Json.format[Post]
 
   /**
     * Type name.
@@ -119,7 +120,7 @@ object Post {
   /**
     * Type mapping.
     */
-  val Mapping = Json.stringify(
+  val Mapping: String = Json.stringify(
     Json.obj(
       "_all" -> Json.obj(
         "enabled" -> false

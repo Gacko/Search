@@ -8,6 +8,7 @@ import models.tag.Tags
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.json.Json
 import play.api.mvc.Action
+import play.api.mvc.AnyContent
 import play.api.mvc.Controller
 
 /**
@@ -22,7 +23,7 @@ final class TagController @Inject()(dao: TagDAO) extends Controller {
     * @param post Post ID.
     * @return If a post has been found and the tags have been indexed.
     */
-  def index(post: Int) = Action.async(parse.json[Tags]) { request =>
+  def index(post: Int): Action[Tags] = Action.async(parse.json[Tags]) { request =>
     val tags = request.body.tags
     dao.index(post, tags) map { indexed =>
       Ok(Json.obj("indexed" -> indexed))
@@ -36,7 +37,7 @@ final class TagController @Inject()(dao: TagDAO) extends Controller {
     * @param id   Tag ID.
     * @return If a post has been found and the tag has been deleted.
     */
-  def delete(post: Int, id: Int) = Action.async {
+  def delete(post: Int, id: Int): Action[AnyContent] = Action.async {
     dao.delete(post, id) map { deleted =>
       Ok(Json.obj("deleted" -> deleted))
     }
