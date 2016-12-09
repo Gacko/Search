@@ -6,6 +6,7 @@ import javax.inject.Singleton
 import models.index.Index
 import models.post.Post
 import org.elasticsearch.action.index.IndexRequestBuilder
+import org.elasticsearch.action.search.SearchResponse
 import org.elasticsearch.client.Client
 import org.elasticsearch.index.engine.VersionConflictEngineException
 import org.elasticsearch.index.query.MatchQueryBuilder.Operator
@@ -56,8 +57,9 @@ final class ElasticPostDAO @Inject()(client: Client, index: Index, configuration
         val post = json.validate[Post].get
         // Get document version.
         val version = r.getVersion
+        // Return post and version as tuple.
         Some((post, version))
-      case r => None
+      case _ => None
     }
   }
 
@@ -68,12 +70,12 @@ final class ElasticPostDAO @Inject()(client: Client, index: Index, configuration
     * @return Index request for the post.
     */
   private def request(post: Post): IndexRequestBuilder = {
+    // Get post ID as string.
+    val id = post.id.toString
     // Convert post into JSON.
     val json = Json toJson post
     // Get JSON as string.
     val source = Json stringify json
-    // Get post ID as string.
-    val id = post.id.toString
     // Build request, set source and return it.
     client.prepareIndex(index.write, Post.Type, id) setSource source
   }
@@ -95,6 +97,24 @@ final class ElasticPostDAO @Inject()(client: Client, index: Index, configuration
     val response = request.execute
     // Handle response.
     response map { response => response.getId == post.id.toString }
+  }
+
+  /**
+    * Parses posts from a search response.
+    *
+    * @param response Search response.
+    * @return Posts.
+    */
+  private def posts(response: SearchResponse): Seq[Post] = {
+    // Parse hits into posts.
+    for (hit <- response.getHits.hits) yield {
+      // Get source from hit.
+      val source = hit.source
+      // Parse JSON from source.
+      val json = Json parse source
+      // Validate post.
+      json.validate[Post].get
+    }
   }
 
   /**
@@ -161,17 +181,7 @@ final class ElasticPostDAO @Inject()(client: Client, index: Index, configuration
     // Execute request.
     val response = request.execute
     // Handle response.
-    response.map { response =>
-      // Parse hits into posts.
-      for (hit <- response.getHits.hits) yield {
-        // Get source from hit.
-        val source = hit.source
-        // Parse JSON from source.
-        val json = Json parse source
-        // Validate post.
-        json.validate[Post].get
-      }
-    }
+    response map posts
   }
 
   /**
@@ -183,12 +193,12 @@ final class ElasticPostDAO @Inject()(client: Client, index: Index, configuration
     */
   override def update(id: Int)(f: Post => Post)(implicit ec: ExecutionContext): Future[Boolean] = {
     def update(id: Int, retries: Int)(f: Post => Post): Future[Boolean] = {
-      get(id) flatMap {
+      this get id flatMap {
         case Some((post, version)) =>
           val updated = f(post)
           index(updated, version) recoverWith {
-            case v: VersionConflictEngineException if retries > 0 => update(id, retries - 1)(f)
-            case v: VersionConflictEngineException =>
+            case _: VersionConflictEngineException if retries > 0 => update(id, retries - 1)(f)
+            case _: VersionConflictEngineException =>
               Logger error s"ElasticPostDAO::update: Failed to update post $id due to conflicting versions. No more retries left."
               Future successful false
             case e: Throwable => throw e
