@@ -47,39 +47,53 @@ sealed class Disconnect @Inject()(lifecycle: ApplicationLifecycle, client: Clien
 final class Elasticsearch(environment: Environment, configuration: Configuration) extends AbstractModule {
 
   /**
-    * Pairs key and value into a single entry settings object.
-    *
-    * @param key   Key.
-    * @param value Value.
-    * @return Settings.
+    * Whether to run a local cluster or connect to a remote one.
     */
-  private def settings(key: String, value: String): Settings = {
-    val builder = Settings.builder
-    builder.put(key, value)
-    builder.build
-  }
+  private val Local = configuration getBoolean "cluster.local" getOrElse false
+
+  /**
+    * Elasticsearch configuration file name.
+    */
+  private val YAML = "elasticsearch.yml"
+
+  /**
+    * Cluster name.
+    */
+  private val ClusterName = configuration getString "cluster.name"
 
   /**
     * Starts a local cluster and creates a client connected to it.
     *
-    * @return Client connected to a local cluster.
+    * @return Node and client connected to it.
     */
   private def local: (Node, Client) = {
+    // Obtain a node builder.
     val builder = NodeBuilder.nodeBuilder
-    // Setup home path.
-    builder settings settings("path.home", environment.rootPath.getAbsolutePath)
+
+    // Create settings builder.
+    val settings = Settings.builder
+    // Attempt to load Elasticsearch configuration file.
+    environment resourceAsStream YAML foreach { stream =>
+      settings.loadFromStream(YAML, stream)
+    }
+    // Put home path.
+    settings.put("path.home", environment.rootPath.getAbsolutePath)
+    // Set settings.
+    builder settings settings
+
     // Setup node role.
     builder client false
     builder data true
     builder local true
-    // Set cluster name if defined.
-    configuration getString "cluster.name" match {
-      case Some(cluster) => builder clusterName cluster
-      case None =>
-    }
+
+    // Set cluster name.
+    ClusterName foreach builder.clusterName
+
     // Start node.
     val node = builder.node
+    // Get client from node.
     val client = node.client
+    // Return node and client.
     (node, client)
   }
 
@@ -89,12 +103,14 @@ final class Elasticsearch(environment: Environment, configuration: Configuration
     * @return Client connected to a remote cluster.
     */
   private def transport: Client = {
+    // Obtain a client builder.
     val builder = TransportClient.builder
-    // Set cluster name if defined.
-    configuration getString "cluster.name" match {
-      case Some(cluster) => builder settings settings("cluster.name", cluster)
-      case None =>
+
+    // Set cluster name.
+    ClusterName foreach { clusterName =>
+      builder settings Settings.builder.put("cluster.name", clusterName)
     }
+
     // Build client.
     val client = builder.build
 
@@ -111,12 +127,15 @@ final class Elasticsearch(environment: Environment, configuration: Configuration
         case -1 => 9300
         case p => p
       }
+
       // Create transport address.
       val address = new InetSocketTransportAddress(InetAddress getByName host, port)
       // Add transport address.
       client addTransportAddress address
+
       Logger info s"Elasticsearch::transport: Connected to $address."
     }
+
     // Return client.
     client
   }
@@ -125,16 +144,22 @@ final class Elasticsearch(environment: Environment, configuration: Configuration
     * Connect to Elasticsearch and configure bindings.
     */
   override def configure(): Unit = {
-    configuration getBoolean "cluster.local" match {
-      case Some(true) =>
-        val (node, client) = local
-        bind(classOf[Node]) toInstance node
-        bind(classOf[Client]) toInstance client
-        bind(classOf[Shutdown]).asEagerSingleton()
-      case _ =>
-        bind(classOf[Client]) toInstance transport
-        bind(classOf[Disconnect]).asEagerSingleton()
-    }
+    // Obtain client.
+    val client = if (Local) {
+      // Start local node and get client.
+      val (node, client) = local
+      // Bind Node.
+      bind(classOf[Node]) toInstance node
+      // Bind Shutdown as eager singleton.
+      bind(classOf[Shutdown]).asEagerSingleton()
+      // Return client.
+      client
+    } else transport
+
+    // Bind Client.
+    bind(classOf[Client]) toInstance client
+    // Bind Disconnect as eager singleton.
+    bind(classOf[Disconnect]).asEagerSingleton()
   }
 
 }
