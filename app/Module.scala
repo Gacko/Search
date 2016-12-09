@@ -5,14 +5,13 @@ import dao.post.ElasticPostDAO
 import dao.post.PostDAO
 import dao.tag.ElasticTagDAO
 import dao.tag.TagDAO
-import play.api.libs.concurrent.AkkaGuiceSupport
 import services.ElasticIndexService
 import services.IndexService
 
 /**
   * Marco Ebert 24.09.16
   */
-final class Module extends AbstractModule with AkkaGuiceSupport {
+final class Module extends AbstractModule {
 
   /**
     * Configure bindings.
