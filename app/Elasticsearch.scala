@@ -146,9 +146,9 @@ final class Elasticsearch(environment: Environment, configuration: Configuration
   override def configure(): Unit = {
     // Obtain client.
     val client = if (Local) {
-      // Start local node and get client.
+      // Start local node and obtain a client.
       val (node, client) = local
-      // Bind Node.
+      // Bind Node to node instance.
       bind(classOf[Node]) toInstance node
       // Bind Shutdown as eager singleton.
       bind(classOf[Shutdown]).asEagerSingleton()
@@ -156,7 +156,7 @@ final class Elasticsearch(environment: Environment, configuration: Configuration
       client
     } else transport
 
-    // Bind Client.
+    // Bind Client to client instance.
     bind(classOf[Client]) toInstance client
     // Bind Disconnect as eager singleton.
     bind(classOf[Disconnect]).asEagerSingleton()
