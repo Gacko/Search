@@ -42,7 +42,7 @@ final class ElasticIndexService @Inject()(client: Client, index: Index) extends 
     // Execute request.
     val response = request.execute
     // Handle response.
-    response map { response =>
+    response map { _ =>
       Logger info s"ElasticIndexService::create: Created index '$name'."
       // Return name.
       name
@@ -147,9 +147,9 @@ final class ElasticIndexService @Inject()(client: Client, index: Index) extends 
           // Move backup alias to read index and remove if exists.
           for {
             r <- read if read != backup
-            alias <- setAlias(r, index.backup, backup)
+            _ <- setAlias(r, index.backup, backup)
             b <- backup
-          } delete(b)
+          } this delete b
           // Set read alias to write index.
           setAlias(w, index.read, read)
         case _ =>
@@ -165,7 +165,7 @@ final class ElasticIndexService @Inject()(client: Client, index: Index) extends 
         case Success(false) => Logger info s"ElasticIndexService::switch: Failed to switch indices: Elasticsearch did not acknowledge."
         case Failure(throwable) => Logger error s"ElasticIndexService::switch: Failed to switch indices due to an exception: $throwable"
       } recover {
-        case throwable => false
+        case _ => false
       }
     }
   }
@@ -214,7 +214,7 @@ final class ElasticIndexService @Inject()(client: Client, index: Index) extends 
         case Success(false) => Logger info s"ElasticIndexService::rollback: Failed to rollback indices: Elasticsearch did not acknowledge."
         case Failure(throwable) => Logger error s"ElasticIndexService::rollback: Failed to rollback indices due to an exception: $throwable"
       } recover {
-        case throwable => false
+        case _ => false
       }
     }
   }
