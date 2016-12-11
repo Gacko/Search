@@ -1,0 +1,12 @@
+#!/bin/bash
+case "$1" in
+  switch)
+    curl --request POST "http://localhost:9000/index" --silent && echo
+    ;;
+  rollback)
+    curl --request DELETE "http://localhost:9000/index" --silent && echo
+    ;;
+  *)
+    echo "Usage: index {switch|rollback}"
+    ;;
+esac

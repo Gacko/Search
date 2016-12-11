@@ -1,0 +1,13 @@
+#!/bin/bash
+case "$1" in
+  index)
+    curl --request POST --header "Content-Type: application/json" "http://localhost:9000/posts/1377495/tags" --data @`dirname $0`/tags.json --silent && echo
+    ;;
+  delete)
+    curl --request DELETE "http://localhost:9000/posts/1377495/tags/1" --silent && echo
+    curl --request DELETE "http://localhost:9000/posts/1377495/tags/2" --silent && echo
+    ;;
+  *)
+    echo "Usage: tags {index|delete}"
+    ;;
+esac
