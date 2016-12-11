@@ -39,8 +39,8 @@ final class CrawlerController @Inject()(@Named(Crawler.Name) crawler: ActorRef) 
     // Map answer.
     question.mapTo[Boolean] recover {
       // Recover from failure.
-      case throwable =>
-        Logger error s"CrawlerController::start: Failed to ask crawler due to an exception: $throwable"
+      case exception =>
+        Logger error s"CrawlerController::start: Failed to ask crawler due to an exception: $exception"
         false
     } map { started =>
       // Parse answer as JSON.
@@ -59,8 +59,8 @@ final class CrawlerController @Inject()(@Named(Crawler.Name) crawler: ActorRef) 
     // Map answer.
     question.mapTo[Boolean] recover {
       // Recover from failure.
-      case throwable =>
-        Logger error s"CrawlerController::stop: Failed to ask crawler due to an exception: $throwable"
+      case exception =>
+        Logger error s"CrawlerController::stop: Failed to ask crawler due to an exception: $exception"
         false
     } map { stopped =>
       // Parse answer as JSON.

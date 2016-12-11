@@ -26,7 +26,7 @@ object Futures {
 
       override def onResponse(response: T): Unit = promise success response
 
-      override def onFailure(throwable: Throwable): Unit = promise failure throwable
+      override def onFailure(exception: Throwable): Unit = promise failure exception
 
     }
 
