@@ -1,17 +1,23 @@
+import actors.Crawler
 import com.google.inject.AbstractModule
 import dao.comment.CommentDAO
 import dao.comment.ElasticCommentDAO
+import dao.info.InfoDAO
+import dao.info.RestInfoDAO
+import dao.item.ItemDAO
+import dao.item.RestItemDAO
 import dao.post.ElasticPostDAO
 import dao.post.PostDAO
 import dao.tag.ElasticTagDAO
 import dao.tag.TagDAO
+import play.api.libs.concurrent.AkkaGuiceSupport
 import services.ElasticIndexService
 import services.IndexService
 
 /**
   * Marco Ebert 24.09.16
   */
-final class Module extends AbstractModule {
+final class Module extends AbstractModule with AkkaGuiceSupport {
 
   /**
     * Configure bindings.
@@ -24,8 +30,16 @@ final class Module extends AbstractModule {
     // Bind CommentDAO to ElasticCommentDAO.
     bind(classOf[CommentDAO]) to classOf[ElasticCommentDAO]
 
+    // Bind ItemDAO to RestItemDAO.
+    bind(classOf[ItemDAO]) to classOf[RestItemDAO]
+    // Bind InfoDAO to RestInfoDAO.
+    bind(classOf[InfoDAO]) to classOf[RestInfoDAO]
+
     // Bind IndexService to ElasticIndexService.
     bind(classOf[IndexService]) to classOf[ElasticIndexService]
+
+    // Bind Crawler.
+    bindActor[Crawler](Crawler.Name)
   }
 
 }

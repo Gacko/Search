@@ -1,3 +1,2 @@
 #!/bin/bash
-curl --request DELETE "http://localhost:9000/index"
-echo ""
+curl --request DELETE "http://localhost:9000/index" --silent && echo

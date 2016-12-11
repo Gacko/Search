@@ -15,3 +15,7 @@ DELETE        /posts/:post/comments/:id        controllers.CommentController.del
 # Index
 POST          /index                           controllers.IndexController.switch
 DELETE        /index                           controllers.IndexController.rollback
+
+# Crawler
+POST          /crawler                         controllers.CrawlerController.start
+DELETE        /crawler                         controllers.CrawlerController.stop
