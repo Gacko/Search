@@ -131,7 +131,7 @@ final class ElasticIndexService @Inject()(client: Client, index: Index) extends 
     * @return
     */
   override def switch(implicit ec: ExecutionContext): Future[Boolean] = {
-    Logger info s"ElasticIndexService::switch: Switching indices."
+    Logger info "ElasticIndexService::switch: Switching indices."
     // Get aliases.
     aliases flatMap { aliases =>
       // Get read index name.
@@ -161,8 +161,8 @@ final class ElasticIndexService @Inject()(client: Client, index: Index) extends 
       }
 
       switch andThen {
-        case Success(true) => Logger info s"ElasticIndexService::switch: Switched indices."
-        case Success(false) => Logger info s"ElasticIndexService::switch: Failed to switch indices: Elasticsearch did not acknowledge."
+        case Success(true) => Logger info "ElasticIndexService::switch: Switched indices."
+        case Success(false) => Logger info "ElasticIndexService::switch: Failed to switch indices: Elasticsearch did not acknowledge."
         case Failure(exception) => Logger error s"ElasticIndexService::switch: Failed to switch indices due to an exception: $exception"
       } recover {
         case _ => false
@@ -181,7 +181,7 @@ final class ElasticIndexService @Inject()(client: Client, index: Index) extends 
     * @return
     */
   override def rollback(implicit ec: ExecutionContext): Future[Boolean] = {
-    Logger info s"ElasticIndexService::rollback: Rolling back indices."
+    Logger info "ElasticIndexService::rollback: Rolling back indices."
     // Get aliases.
     aliases flatMap { aliases =>
       // Get read index name.
@@ -210,8 +210,8 @@ final class ElasticIndexService @Inject()(client: Client, index: Index) extends 
       }
 
       rollback andThen {
-        case Success(true) => Logger info s"ElasticIndexService::rollback: Rolled back indices."
-        case Success(false) => Logger info s"ElasticIndexService::rollback: Failed to rollback indices: Elasticsearch did not acknowledge."
+        case Success(true) => Logger info "ElasticIndexService::rollback: Rolled back indices."
+        case Success(false) => Logger info "ElasticIndexService::rollback: Failed to rollback indices: Elasticsearch did not acknowledge."
         case Failure(exception) => Logger error s"ElasticIndexService::rollback: Failed to rollback indices due to an exception: $exception"
       } recover {
         case _ => false
