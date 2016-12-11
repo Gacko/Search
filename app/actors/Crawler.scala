@@ -31,11 +31,11 @@ object Crawler {
   case object Stop
 
   /**
-    * Crawl items.
+    * Find items.
     *
     * @param newer Items newer than this.
     */
-  case class Crawl(newer: Int)
+  case class Find(newer: Int)
 
 }
 
@@ -47,7 +47,7 @@ final class Crawler @Inject()(dao: ItemDAO) extends Actor {
     * Busy behaviour.
     */
   private def busy: Receive = {
-    case Crawler.Crawl(newer) =>
+    case Crawler.Find(newer) =>
       // Find items.
       dao find Some(newer) onComplete {
         case Success(Items(_, _, _, items)) =>
@@ -59,16 +59,16 @@ final class Crawler @Inject()(dao: ItemDAO) extends Actor {
             Logger info s"Crawler::busy::crawl: $head - $last"
 
             // Continue crawling.
-            self ! Crawler.Crawl(last)
+            self ! Crawler.Find(last)
           } else {
             Logger info "Crawler::busy::crawl: No more items."
             // Stop crawling.
-            self ! Crawler.Crawl(0)
+            self ! Crawler.Find(0)
           }
         case Failure(exception) =>
           Logger error s"Crawler::busy::crawl: Failed to fetch items newer than $newer: $exception"
           // Retry.
-          self ! Crawler.Crawl(newer)
+          self ! Crawler.Find(newer)
       }
     // Already crawling.
     case Crawler.Start =>
@@ -94,7 +94,7 @@ final class Crawler @Inject()(dao: ItemDAO) extends Actor {
       // Become busy.
       context become busy
       // Start crawling.
-      self ! Crawler.Crawl(0)
+      self ! Crawler.Find(0)
       // Return success.
       sender ! true
     // Not crawling.
