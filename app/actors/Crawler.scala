@@ -52,7 +52,10 @@ final class Crawler @Inject()(dao: ItemDAO, @Named(Fetcher.Name) fetcher: ActorR
 
   import context.dispatcher
 
-  private implicit val Timeout: Timeout = 20.seconds
+  /**
+    * Fetcher ask timeout.
+    */
+  private implicit val Timeout: Timeout = 30.seconds
 
   /**
     * Busy behaviour.
@@ -64,11 +67,14 @@ final class Crawler @Inject()(dao: ItemDAO, @Named(Fetcher.Name) fetcher: ActorR
         case Success(Items(_, _, _, items)) =>
           if (items.nonEmpty) {
             Future.traverse(items) { item =>
-              (fetcher ? item).mapTo[Info] recover { case exception =>
+              // Ask fetcher for item and recover in case of failure.
+              val future = (fetcher ? item) recover { case exception =>
                 Logger error s"Crawler::busy::find: Failed to fetch info ${item.id}: $exception"
-                // Recover with empty info. Better than no item.
+                // Recover without info.
                 Info(Seq.empty, Seq.empty)
-              } map Post.from(item)
+              }
+              // Map info to post.
+              future.mapTo[Info] map Post.from(item)
             } foreach { posts =>
               // Index posts.
               indexer ! Posts(posts)
@@ -84,7 +90,7 @@ final class Crawler @Inject()(dao: ItemDAO, @Named(Fetcher.Name) fetcher: ActorR
             }
           } else {
             Logger info "Crawler::busy::find: No more items."
-            // Stop crawling.
+            // Continue from beginning.
             self ! Crawler.Find(0)
           }
         case Failure(exception) =>
