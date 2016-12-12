@@ -1,5 +1,7 @@
 import actors.Crawler
+import actors.Fetcher
 import actors.Indexer
+import akka.routing.BalancingPool
 import com.google.inject.AbstractModule
 import dao.comment.CommentDAO
 import dao.comment.ElasticCommentDAO
@@ -41,6 +43,8 @@ final class Module extends AbstractModule with AkkaGuiceSupport {
 
     // Bind Crawler.
     bindActor[Crawler](Crawler.Name)
+    // Bind Fetcher.
+    bindActor[Fetcher](Fetcher.Name, BalancingPool(4).props)
     // Bind Indexer.
     bindActor[Indexer](Indexer.Name)
   }
