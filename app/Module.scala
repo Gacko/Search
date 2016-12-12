@@ -1,4 +1,5 @@
 import actors.Crawler
+import actors.Indexer
 import com.google.inject.AbstractModule
 import dao.comment.CommentDAO
 import dao.comment.ElasticCommentDAO
@@ -40,6 +41,8 @@ final class Module extends AbstractModule with AkkaGuiceSupport {
 
     // Bind Crawler.
     bindActor[Crawler](Crawler.Name)
+    // Bind Indexer.
+    bindActor[Indexer](Indexer.Name)
   }
 
 }
