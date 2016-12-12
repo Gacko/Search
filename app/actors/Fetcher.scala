@@ -3,6 +3,7 @@ package actors
 import javax.inject.Inject
 
 import akka.actor.Actor
+import akka.actor.Status
 import dao.info.InfoDAO
 import models.item.Item
 
@@ -43,7 +44,7 @@ final class Fetcher @Inject()(dao: InfoDAO) extends Actor {
         Await.result(dao get item.id, Timeout)
       } match {
         case Success(info) => sender ! info
-        case Failure(exception) => sender ! Failure(exception)
+        case Failure(exception) => sender ! Status.Failure(exception)
       }
   }
 

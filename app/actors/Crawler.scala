@@ -64,17 +64,18 @@ final class Crawler @Inject()(dao: ItemDAO, @Named(Fetcher.Name) fetcher: ActorR
     case Crawler.Find(newer) =>
       // Find items.
       dao find Some(newer) onComplete {
+        // Found items.
         case Success(Items(_, _, _, items)) =>
+          // Handle if not empty.
           if (items.nonEmpty) {
+            // Fetch info.
             Future.traverse(items) { item =>
-              // Ask fetcher for item and recover in case of failure.
-              val future = (fetcher ? item) recover { case exception =>
+              // Ask fetcher for info and recover in case of failure.
+              (fetcher ? item).mapTo[Info] recover { case exception =>
                 Logger error s"Crawler::busy::find: Failed to fetch info ${item.id}: $exception"
                 // Recover without info.
                 Info(Seq.empty, Seq.empty)
-              }
-              // Map info to post.
-              future.mapTo[Info] map Post.from(item)
+              } map Post.from(item)
             } foreach { posts =>
               // Index posts.
               indexer ! Posts(posts)
