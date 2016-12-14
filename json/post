@@ -1,10 +1,10 @@
 #!/bin/bash
 case "$1" in
   index)
-    curl --request POST --header "Content-Type: application/json" "http://localhost:9000/posts" --data @`dirname "$0"`/post.json --silent && echo
+    curl --request POST --header "Content-Type: application/json" "http://localhost:9000/posts" --data @`dirname "$0"`/post.json --silent --show-error && echo
     ;;
   delete)
-    curl --request DELETE "http://localhost:9000/posts/1377495" --silent && echo
+    curl --request DELETE "http://localhost:9000/posts/1377495" --silent --show-error && echo
     ;;
   *)
     echo "Usage: post {index|delete}"

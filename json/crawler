@@ -1,10 +1,10 @@
 #!/bin/bash
 case "$1" in
   start)
-    curl --request POST "http://localhost:9000/crawler" --silent && echo
+    curl --request POST "http://localhost:9000/crawler" --silent --show-error && echo
     ;;
   stop)
-    curl --request DELETE "http://localhost:9000/crawler" --silent && echo
+    curl --request DELETE "http://localhost:9000/crawler" --silent --show-error && echo
     ;;
   *)
     echo "Usage: crawler {start|stop}"
