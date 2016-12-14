@@ -88,16 +88,23 @@ final class Crawler @Inject()(
   private def busy: Receive = {
     // Crawl newer items.
     case Crawler.Crawl(newer) =>
+      // Start measuring time.
+      val start = System.currentTimeMillis
       // Find items.
       dao find Some(newer) onComplete {
         case Success(Items(_, _, _, items)) if items.nonEmpty =>
           // Fetch posts.
           this fetch items andThen { case _ =>
+            // Stop measuring time.
+            val took = System.currentTimeMillis - start
+            // Calculate velocity in items per second.
+            val velocity = items.size * 1000 / took
+
             // Get IDs.
             val head = items.head.id
             val last = items.last.id
 
-            Logger info s"Crawler::crawl: $head - $last"
+            Logger info s"Crawler::crawl: $head - $last | $took ms | $velocity items/s"
 
             // Continue crawling.
             self ! Crawler.Crawl(last)
