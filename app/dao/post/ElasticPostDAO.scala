@@ -24,7 +24,7 @@ import scala.concurrent.Future
   * Marco Ebert 20.05.16
   */
 @Singleton
-final class ElasticPostDAO @Inject()(client: Client, index: Index, configuration: Configuration) extends PostDAO {
+final class ElasticPostDAO @Inject()(configuration: Configuration, client: Client, index: Index) extends PostDAO {
 
   /**
     * Maximum update retries.
