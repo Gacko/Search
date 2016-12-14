@@ -35,7 +35,7 @@ object Crawler {
   /**
     * Start crawling.
     */
-  case object Start
+  case class Start(from: Option[Int])
 
   /**
     * Stop crawling.
@@ -115,7 +115,7 @@ final class Crawler @Inject()(
           self ! Crawler.Crawl(newer)
       }
     // Already crawling.
-    case Crawler.Start =>
+    case Crawler.Start(_) =>
       Logger info "Crawler::start: Already crawling."
       // Return failure.
       sender ! false
@@ -133,12 +133,12 @@ final class Crawler @Inject()(
     */
   override def receive: Receive = {
     // Start crawling.
-    case Crawler.Start =>
+    case Crawler.Start(from) =>
       Logger info "Crawler::start: Starting crawling."
       // Become busy.
       context become busy
       // Start crawling.
-      self ! Crawler.Crawl(0)
+      self ! Crawler.Crawl(from getOrElse 0)
       // Return success.
       sender ! true
     // Not crawling.

@@ -33,9 +33,9 @@ final class CrawlerController @Inject()(@Named(Crawler.Name) crawler: ActorRef) 
     *
     * @return Status.
     */
-  def start: Action[AnyContent] = Action.async {
+  def start(from: Option[Int]): Action[AnyContent] = Action.async {
     // Ask crawler to start crawling.
-    val question = crawler ? Crawler.Start
+    val question = crawler ? Crawler.Start(from)
     // Map answer.
     question.mapTo[Boolean] recover {
       // Recover from failure.

@@ -17,5 +17,5 @@ POST          /index                           controllers.IndexController.switc
 DELETE        /index                           controllers.IndexController.rollback
 
 # Crawler
-POST          /crawler                         controllers.CrawlerController.start
+POST          /crawler                         controllers.CrawlerController.start(from: Option[Int])
 DELETE        /crawler                         controllers.CrawlerController.stop
