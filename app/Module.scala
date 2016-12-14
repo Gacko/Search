@@ -1,6 +1,7 @@
 import actors.Crawler
 import actors.Fetcher
 import actors.Indexer
+import akka.actor.Actor
 import akka.routing.BalancingPool
 import com.google.inject.AbstractModule
 import dao.comment.CommentDAO
@@ -13,14 +14,32 @@ import dao.post.ElasticPostDAO
 import dao.post.PostDAO
 import dao.tag.ElasticTagDAO
 import dao.tag.TagDAO
+import play.api.Configuration
+import play.api.Environment
 import play.api.libs.concurrent.AkkaGuiceSupport
 import services.ElasticIndexService
 import services.IndexService
 
+import scala.reflect.ClassTag
+
 /**
   * Marco Ebert 24.09.16
   */
-final class Module extends AbstractModule with AkkaGuiceSupport {
+final class Module(environment: Environment, configuration: Configuration) extends AbstractModule with AkkaGuiceSupport {
+
+  /**
+    * Bind balancing pooled actor.
+    *
+    * @param name  Actor name.
+    * @param clazz Class tag.
+    * @tparam A Actor type.
+    */
+  private def bindPooledActor[A <: Actor](name: String)(implicit clazz: ClassTag[A]): Unit = {
+    configuration getInt s"$name.pool.size" match {
+      case Some(size) => bindActor[A](name, BalancingPool(size).props)
+      case None => bindActor[A](name)
+    }
+  }
 
   /**
     * Configure bindings.
@@ -44,7 +63,7 @@ final class Module extends AbstractModule with AkkaGuiceSupport {
     // Bind Crawler.
     bindActor[Crawler](Crawler.Name)
     // Bind Fetcher.
-    bindActor[Fetcher](Fetcher.Name, BalancingPool(4).props)
+    bindPooledActor[Fetcher](Fetcher.Name)
     // Bind Indexer.
     bindActor[Indexer](Indexer.Name)
   }

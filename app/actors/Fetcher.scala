@@ -6,6 +6,7 @@ import akka.actor.Actor
 import akka.actor.Status
 import dao.info.InfoDAO
 import models.item.Item
+import play.api.Configuration
 
 import scala.concurrent.Await
 import scala.concurrent.duration._
@@ -25,17 +26,17 @@ object Fetcher {
 
 }
 
-final class Fetcher @Inject()(dao: InfoDAO) extends Actor {
+final class Fetcher @Inject()(configuration: Configuration, dao: InfoDAO) extends Actor {
 
   import context.dispatcher
 
   /**
     * Info fetch timeout.
     */
-  private val Timeout = 10.seconds
+  private val Timeout = (configuration getMilliseconds s"${Fetcher.Name}.timeout").fold(10.seconds)(_.milliseconds)
 
   /**
-    * Indexes posts.
+    * Fetches info for items.
     */
   override def receive: Receive = {
     // Get info for item.
