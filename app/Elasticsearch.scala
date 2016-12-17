@@ -1,5 +1,4 @@
 import java.net.InetAddress
-import java.net.URI
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -119,13 +118,13 @@ final class Elasticsearch(environment: Environment, configuration: Configuration
       nodes <- configuration getStringSeq "cluster.nodes"
       node <- nodes
     } {
-      // Parse node string into URI.
-      val uri = new URI(node)
+      // Parse node string.
+      val split = node.split(":", 2)
       // Get host and port.
-      val host = uri.getHost
-      val port = uri.getPort match {
-        case -1 => 9300
-        case p => p
+      val host = split(0)
+      val port = split.length match {
+        case 1 => 9300
+        case 2 => split(1).toInt
       }
 
       // Create transport address.
