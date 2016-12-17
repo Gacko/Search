@@ -47,7 +47,7 @@ object Crawler {
     *
     * @param newer Items newer than this.
     */
-  case class Crawl(newer: Int)
+  private case class Crawl(newer: Int)
 
 }
 
@@ -91,7 +91,7 @@ final class Crawler @Inject()(
       // Start measuring time.
       val start = System.currentTimeMillis
       // Find items.
-      dao find Some(newer) onComplete {
+      dao.find(newer = Some(newer), flags = Some(15)) onComplete {
         case Success(Items(_, _, _, items)) if items.nonEmpty =>
           // Fetch posts.
           this fetch items andThen { case _ =>
@@ -118,6 +118,8 @@ final class Crawler @Inject()(
           self ! Crawler.Crawl(0)
         case Failure(exception) =>
           Logger error s"Crawler::crawl: Failed to find items newer than $newer: $exception"
+          // Wait.
+          Thread sleep 1000
           // Retry.
           self ! Crawler.Crawl(newer)
       }
