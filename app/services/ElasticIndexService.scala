@@ -11,7 +11,6 @@ import util.Futures._
 import scala.collection.JavaConversions._
 import scala.concurrent.ExecutionContext
 import scala.concurrent.Future
-import scala.util.Failure
 import scala.util.Success
 
 /**
@@ -28,7 +27,6 @@ final class ElasticIndexService @Inject()(client: Client, index: Index) extends 
   private def create(implicit ec: ExecutionContext): Future[String] = {
     // Create name.
     val name = index.name
-    Logger info s"ElasticIndexService::create: Creating index '$name'."
 
     // Prepare request.
     val request = client.admin.indices prepareCreate name
@@ -56,7 +54,6 @@ final class ElasticIndexService @Inject()(client: Client, index: Index) extends 
     * @return Deletion status.
     */
   private def delete(name: String)(implicit ec: ExecutionContext): Future[Boolean] = {
-    Logger info s"ElasticIndexService::delete: Deleting index '$name'."
     // Prepare request.
     val request = client.admin.indices prepareDelete name
     // Execute request.
@@ -101,7 +98,6 @@ final class ElasticIndexService @Inject()(client: Client, index: Index) extends 
     * @return Alias status.
     */
   private def setAlias(name: String, alias: String, remove: Option[String])(implicit ec: ExecutionContext): Future[Boolean] = {
-    Logger info s"ElasticIndexService::setAlias: Adding alias '$alias' to index '$name'."
     // Prepare request.
     val request = client.admin.indices.prepareAliases
 
@@ -114,7 +110,7 @@ final class ElasticIndexService @Inject()(client: Client, index: Index) extends 
     val response = request.execute
     // Handle response.
     response map { response =>
-      Logger info s"ElasticIndexService::setAlias: Added alias '$alias' to index '$name'."
+      Logger info s"ElasticIndexService::setAlias: Set alias '$alias' to index '$name'."
       response.isAcknowledged
     }
   }
@@ -131,7 +127,6 @@ final class ElasticIndexService @Inject()(client: Client, index: Index) extends 
     * @return
     */
   override def switch(implicit ec: ExecutionContext): Future[Boolean] = {
-    Logger info "ElasticIndexService::switch: Switching indices."
     // Get aliases.
     aliases flatMap { aliases =>
       // Get read index name.
@@ -139,7 +134,7 @@ final class ElasticIndexService @Inject()(client: Client, index: Index) extends 
       // Get write index name.
       val write = aliases.get(index.write)
 
-      val switch = write match {
+      write match {
         // Write index exists but is not equal to read index.
         case Some(w) if read != write =>
           // Get backup index name.
@@ -159,14 +154,6 @@ final class ElasticIndexService @Inject()(client: Client, index: Index) extends 
             alias <- setAlias(name, index.write, write)
           } yield alias
       }
-
-      switch andThen {
-        case Success(true) => Logger info "ElasticIndexService::switch: Switched indices."
-        case Success(false) => Logger info "ElasticIndexService::switch: Failed to switch indices: Elasticsearch did not acknowledge."
-        case Failure(exception) => Logger error s"ElasticIndexService::switch: Failed to switch indices due to an exception: $exception"
-      } recover {
-        case _ => false
-      }
     }
   }
 
@@ -181,7 +168,6 @@ final class ElasticIndexService @Inject()(client: Client, index: Index) extends 
     * @return
     */
   override def rollback(implicit ec: ExecutionContext): Future[Boolean] = {
-    Logger info "ElasticIndexService::rollback: Rolling back indices."
     // Get aliases.
     aliases flatMap { aliases =>
       // Get read index name.
@@ -189,7 +175,7 @@ final class ElasticIndexService @Inject()(client: Client, index: Index) extends 
       // Get write index name.
       val write = aliases get index.write
 
-      val rollback = read match {
+      read match {
         // Read index exists but is not equal to write index.
         case Some(r) if read != write =>
           // Set write alias to read index.
@@ -207,14 +193,6 @@ final class ElasticIndexService @Inject()(client: Client, index: Index) extends 
               setAlias(b, index.read, read)
             case _ => Future successful false
           }
-      }
-
-      rollback andThen {
-        case Success(true) => Logger info "ElasticIndexService::rollback: Rolled back indices."
-        case Success(false) => Logger info "ElasticIndexService::rollback: Failed to rollback indices: Elasticsearch did not acknowledge."
-        case Failure(exception) => Logger error s"ElasticIndexService::rollback: Failed to rollback indices due to an exception: $exception"
-      } recover {
-        case _ => false
       }
     }
   }
