@@ -74,8 +74,8 @@ final class Crawler @Inject()(
   private def fetch(items: Seq[Item])(implicit ec: ExecutionContext): Future[Seq[Post]] = {
     Future.traverse(items) { item =>
       // Ask fetcher for info and recover in case of failure.
-      (fetcher ? item).mapTo[Info] recover { case exception =>
-        Logger error s"Crawler::fetch: Failed to fetch info ${item.id}: $exception"
+      (fetcher ? item).mapTo[Info] recover { case _ =>
+        Logger warn s"Crawler::fetch: Failed to fetch info ${item.id}."
         // Recover without info.
         Info(Seq.empty, Seq.empty)
       } map Post.from(item)
@@ -116,8 +116,8 @@ final class Crawler @Inject()(
           Logger info "Crawler::crawl: No more items."
           // Continue from beginning.
           self ! Crawler.Crawl(0)
-        case Failure(exception) =>
-          Logger error s"Crawler::crawl: Failed to find items newer than $newer: $exception"
+        case Failure(_) =>
+          Logger warn s"Crawler::crawl: Failed to find items newer than $newer."
           // Wait.
           Thread sleep 1000
           // Retry.
