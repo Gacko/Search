@@ -107,7 +107,7 @@ object Post {
   /**
     * Flat tags field name.
     */
-  val FlatTags = "flatTags"
+  val FlatTags = "flat_tags"
 
   /**
     * Comments field name.
@@ -117,16 +117,14 @@ object Post {
   /**
     * Flat comments field name.
     */
-  val FlatComments = "flatComments"
+  val FlatComments = "flat_comments"
 
   /**
     * Type mapping.
     */
   val Mapping: String = Json.stringify(
     Json.obj(
-      "_all" -> Json.obj(
-        "enabled" -> false
-      ),
+      "_all" -> Json.obj("enabled" -> false),
       "properties" -> Json.obj(
         ID -> Json.obj("type" -> "integer"),
         Promoted -> Json.obj("type" -> "integer"),
