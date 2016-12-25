@@ -9,6 +9,7 @@ import org.elasticsearch.action.index.IndexRequestBuilder
 import org.elasticsearch.action.search.SearchResponse
 import org.elasticsearch.client.Client
 import org.elasticsearch.index.engine.VersionConflictEngineException
+import org.elasticsearch.index.query.MatchQueryBuilder.Operator
 import org.elasticsearch.index.query.QueryBuilders
 import org.elasticsearch.search.sort.SortOrder
 import play.api.Configuration
@@ -159,14 +160,15 @@ final class ElasticPostDAO @Inject()(configuration: Configuration, client: Clien
   }
 
   /**
-    * Finds posts by tags, flags and promoted.
+    * Finds posts by flags, promotion status, tags and/or user.
     *
-    * @param tags     Tags.
     * @param flags    Flags.
     * @param promoted Promoted.
-    * @return Posts by flags containing tags.
+    * @param tags     Tags.
+    * @param user     User.
+    * @return Posts by flags, promotion status, tags and/or user.
     */
-  override def find(tags: Option[String], flags: Option[Byte], promoted: Boolean)(implicit ec: ExecutionContext): Future[Seq[Post]] = {
+  override def find(flags: Option[Byte], promoted: Boolean, tags: Option[String], user: Option[String])(implicit ec: ExecutionContext): Future[Seq[Post]] = {
     // Prepare request.
     val request = client prepareSearch index.read
     // Set type.
@@ -178,14 +180,6 @@ final class ElasticPostDAO @Inject()(configuration: Configuration, client: Clien
 
     // Create boolean query.
     val query = QueryBuilders.boolQuery
-
-    // Add tags match query as must clause if defined.
-    tags map (QueryBuilders.matchQuery(Post.FlatTags, _)) foreach query.must
-
-    if (promoted) {
-      // Promoted posts only.
-      query mustNot QueryBuilders.termQuery(Post.Promoted, 0)
-    }
 
     flags match {
       case Some(mask) =>
@@ -199,6 +193,17 @@ final class ElasticPostDAO @Inject()(configuration: Configuration, client: Clien
         query filter bool
       case _ =>
     }
+
+    if (promoted) {
+      // Promoted posts only.
+      query mustNot QueryBuilders.termQuery(Post.Promoted, 0)
+    }
+
+    // Add tags match query as must clause.
+    tags map (QueryBuilders.matchQuery(Post.FlatTags, _) operator Operator.AND) foreach query.must
+
+    // Add user term query as filter clause.
+    user map (QueryBuilders.termQuery(Post.User, _)) foreach query.filter
 
     // Set query to request.
     request setQuery query

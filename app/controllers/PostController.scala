@@ -43,16 +43,17 @@ final class PostController @Inject()(dao: PostDAO) extends Controller {
   }
 
   /**
-    * Finds posts by tags, flags and promoted.
+    * Finds posts by flags, promotion status, tags and/or user.
     *
-    * @param tags     Tags.
     * @param flags    Flags.
     * @param promoted Promoted.
-    * @return Posts by flags containing tags.
+    * @param tags     Tags.
+    * @param user     User.
+    * @return Posts by flags, promotion status, tags and/or user.
     */
-  def find(tags: Option[String], flags: Option[Int], promoted: Boolean): Action[AnyContent] = Action.async {
+  def find(flags: Option[Int], promoted: Boolean, tags: Option[String], user: Option[String]): Action[AnyContent] = Action.async {
     // Find posts by tags, flags and promoted.
-    dao.find(tags, flags map (_.toByte), promoted) map { posts =>
+    dao.find(flags map (_.toByte), promoted, tags, user) map { posts =>
       // Wrap posts.
       val wrapper = Posts(posts)
       // Convert posts into JSON.

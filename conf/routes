@@ -1,7 +1,7 @@
 # Post
 POST          /posts                           controllers.PostController.index
 POST          /posts/bulk                      controllers.PostController.bulk
-GET           /posts                           controllers.PostController.find(tags: Option[String], flags: Option[Int], promoted: Boolean ?= false)
+GET           /posts                           controllers.PostController.find(flags: Option[Int], promoted: Boolean ?= false, tags: Option[String], user: Option[String])
 DELETE        /posts/:id                       controllers.PostController.delete(id: Int)
 
 # Tag

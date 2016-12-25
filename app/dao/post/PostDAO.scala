@@ -27,14 +27,15 @@ trait PostDAO {
   def index(posts: Seq[Post])(implicit ec: ExecutionContext): Future[Boolean]
 
   /**
-    * Finds posts by tags, flags and promoted.
+    * Finds posts by flags, promotion status, tags and/or user.
     *
-    * @param tags     Tags.
     * @param flags    Flags.
     * @param promoted Promoted.
-    * @return Posts by flags containing tags.
+    * @param tags     Tags.
+    * @param user     User.
+    * @return Posts by flags, promotion status, tags and/or user.
     */
-  def find(tags: Option[String], flags: Option[Byte], promoted: Boolean)(implicit ec: ExecutionContext): Future[Seq[Post]]
+  def find(flags: Option[Byte], promoted: Boolean, tags: Option[String], user: Option[String])(implicit ec: ExecutionContext): Future[Seq[Post]]
 
   /**
     * Updates a post by providing an existing one to a function returning an updated one.
