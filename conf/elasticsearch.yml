@@ -40,7 +40,7 @@ node.name: gacko
 #
 # Lock the memory on startup:
 #
-bootstrap.memory_lock: true
+# bootstrap.memory_lock: true
 #
 # Make sure that the `ES_HEAP_SIZE` environment variable is set to about half the memory
 # available on the system and that the owner of the process is allowed to use this limit.
@@ -51,7 +51,7 @@ bootstrap.memory_lock: true
 #
 # Set the bind address to a specific IP (IPv4 or IPv6):
 #
-network.host: _local_
+# network.host: 192.168.0.1
 #
 # Set a custom port for HTTP:
 #
