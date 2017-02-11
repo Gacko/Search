@@ -10,6 +10,6 @@ scalaVersion := "2.11.8"
 
 libraryDependencies ++= Seq(
   ws,
-  "org.elasticsearch" % "elasticsearch" % "2.4.3",
+  "org.elasticsearch" % "elasticsearch" % "2.4.4",
   "org.scalatestplus.play" %% "scalatestplus-play" % "1.5.1" % Test
 )
