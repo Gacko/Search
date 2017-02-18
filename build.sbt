@@ -10,6 +10,9 @@ scalaVersion := "2.11.8"
 
 libraryDependencies ++= Seq(
   ws,
-  "org.elasticsearch" % "elasticsearch" % "2.4.4",
+  guice,
+  "org.elasticsearch.client" % "transport" % "5.2.1",
+  "org.apache.logging.log4j" % "log4j-api" % "2.7",
+  "org.apache.logging.log4j" % "log4j-to-slf4j" % "2.7",
   "org.scalatestplus.play" %% "scalatestplus-play" % "1.5.1" % Test
 )

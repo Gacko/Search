@@ -5,11 +5,12 @@ import javax.inject.Singleton
 
 import dao.index.IndexDAO
 import models.post.Post
+import org.elasticsearch.action.DocWriteResponse.Result
 import org.elasticsearch.action.index.IndexRequestBuilder
 import org.elasticsearch.action.search.SearchResponse
 import org.elasticsearch.client.Client
 import org.elasticsearch.index.engine.VersionConflictEngineException
-import org.elasticsearch.index.query.MatchQueryBuilder.Operator
+import org.elasticsearch.index.query.Operator
 import org.elasticsearch.index.query.QueryBuilders
 import org.elasticsearch.search.sort.SortOrder
 import play.api.Configuration
@@ -29,12 +30,12 @@ final class ElasticPostDAO @Inject()(configuration: Configuration, client: Clien
   /**
     * Maximum update retries.
     */
-  private val Retries = configuration getInt "post.index.retries" getOrElse 0
+  private val Retries = configuration get[Int] "post.index.retries"
 
   /**
     * Search result size.
     */
-  private val Size = configuration getInt "post.find.size" getOrElse 120
+  private val Size = configuration get[Int] "post.find.size"
 
   /**
     * Possible flags.
@@ -252,7 +253,7 @@ final class ElasticPostDAO @Inject()(configuration: Configuration, client: Clien
     // Execute request.
     val response = request.execute
     // Handle response.
-    response map { response => response.isFound }
+    response map { response => response.getResult == Result.DELETED }
   }
 
 }

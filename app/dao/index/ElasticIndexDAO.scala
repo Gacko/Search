@@ -23,12 +23,12 @@ final class ElasticIndexDAO @Inject()(configuration: Configuration) extends Inde
   /**
     * Shard count.
     */
-  private val Shards = configuration getInt "index.shards" getOrElse 1
+  private val Shards = configuration get[Int] "index.shards"
 
   /**
     * Replica count.
     */
-  private val Replicas = configuration getInt "index.replicas" getOrElse 0
+  private val Replicas = configuration get[Int] "index.replicas"
 
   /**
     * Unique name with timestamp.

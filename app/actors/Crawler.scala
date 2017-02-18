@@ -63,7 +63,7 @@ final class Crawler @Inject()(
   /**
     * Fetcher ask timeout.
     */
-  private implicit val Timeout: Timeout = (configuration getMilliseconds s"${Crawler.Name}.timeout").fold(30.seconds)(_.milliseconds): FiniteDuration
+  private implicit val Timeout: Timeout = (configuration getMillis s"${Crawler.Name}.timeout").milliseconds: FiniteDuration
 
   /**
     * Fetches posts for items.

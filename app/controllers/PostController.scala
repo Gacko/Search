@@ -6,17 +6,22 @@ import javax.inject.Singleton
 import dao.post.PostDAO
 import models.post.Post
 import models.post.Posts
-import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.json.Json
+import play.api.mvc.AbstractController
 import play.api.mvc.Action
 import play.api.mvc.AnyContent
-import play.api.mvc.Controller
+import play.api.mvc.ControllerComponents
 
 /**
   * Marco Ebert 20.05.16
   */
 @Singleton
-final class PostController @Inject()(dao: PostDAO) extends Controller {
+final class PostController @Inject()(dao: PostDAO, components: ControllerComponents) extends AbstractController(components) {
+
+  /**
+    * Implicit execution context.
+    */
+  private implicit val ec = defaultExecutionContext
 
   /**
     * Indexes a post.

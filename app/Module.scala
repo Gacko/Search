@@ -21,9 +21,9 @@ import dao.post.PostDAO
 import dao.tag.ElasticTagDAO
 import dao.tag.TagDAO
 import org.elasticsearch.client.Client
-import org.elasticsearch.client.transport.TransportClient
 import org.elasticsearch.common.settings.Settings
 import org.elasticsearch.common.transport.InetSocketTransportAddress
+import org.elasticsearch.transport.client.PreBuiltTransportClient
 import play.api.Configuration
 import play.api.Environment
 import play.api.Logger
@@ -58,22 +58,15 @@ final class Module(environment: Environment, configuration: Configuration) exten
     * @return Client connected to the configured Elasticsearch cluster.
     */
   private def client: Client = {
-    // Obtain a client builder.
-    val builder = TransportClient.builder
-
-    // Set cluster name.
-    configuration getString "cluster.name" foreach { clusterName =>
-      builder settings Settings.builder.put("cluster.name", clusterName)
-    }
+    // Obtain settings.
+    val cluster: String = configuration get[String] "cluster.name"
+    val settings = Settings.builder.put("cluster.name", cluster).build
 
     // Build client.
-    val client = builder.build
+    val client = new PreBuiltTransportClient(settings)
 
     // Add transport addresses.
-    for {
-      nodes <- configuration getStringSeq "cluster.nodes"
-      node <- nodes
-    } {
+    for (node: String <- configuration get[Seq[String]] "cluster.nodes") {
       // Parse node string.
       val split = node.split(":", 2)
       // Get host and port.
@@ -103,7 +96,7 @@ final class Module(environment: Environment, configuration: Configuration) exten
     * @tparam A Actor type.
     */
   private def bindPooledActor[A <: Actor](name: String)(implicit clazz: ClassTag[A]): Unit = {
-    configuration getInt s"$name.pool.size" match {
+    configuration getOptional[Int] s"$name.pool.size" match {
       case Some(size) => bindActor[A](name, BalancingPool(size).props)
       case None => bindActor[A](name)
     }

@@ -33,7 +33,7 @@ final class Fetcher @Inject()(configuration: Configuration, dao: InfoDAO) extend
   /**
     * Info fetch timeout.
     */
-  private val Timeout = (configuration getMilliseconds s"${Fetcher.Name}.timeout").fold(5.seconds)(_.milliseconds)
+  private val Timeout = (configuration getMillis s"${Fetcher.Name}.timeout").milliseconds
 
   /**
     * Fetches info for items.
