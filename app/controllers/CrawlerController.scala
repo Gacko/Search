@@ -21,12 +21,7 @@ import scala.concurrent.duration._
   * Marco Ebert 28.11.16
   */
 @Singleton
-final class CrawlerController @Inject()(@Named(Crawler.Name) crawler: ActorRef, components: ControllerComponents) extends AbstractController(components) {
-
-  /**
-    * Implicit execution context.
-    */
-  private implicit val ec = defaultExecutionContext
+final class CrawlerController @Inject()(@Named(Crawler.Name) crawler: ActorRef, components: ControllerComponents) extends AbstractController(components) with DefaultExecutionContext {
 
   /**
     * Ask timeout.

@@ -15,12 +15,7 @@ import play.api.mvc.ControllerComponents
   * Marco Ebert 20.05.16
   */
 @Singleton
-final class CommentController @Inject()(dao: CommentDAO, components: ControllerComponents) extends AbstractController(components) {
-
-  /**
-    * Implicit execution context.
-    */
-  private implicit val ec = defaultExecutionContext
+final class CommentController @Inject()(dao: CommentDAO, components: ControllerComponents) extends AbstractController(components) with DefaultExecutionContext {
 
   /**
     * Indexes a comment for a post.

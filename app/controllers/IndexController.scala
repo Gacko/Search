@@ -15,12 +15,7 @@ import services.index.IndexService
   * Marco Ebert 21.05.16
   */
 @Singleton
-final class IndexController @Inject()(service: IndexService, components: ControllerComponents) extends AbstractController(components) {
-
-  /**
-    * Implicit execution context.
-    */
-  private implicit val ec = defaultExecutionContext
+final class IndexController @Inject()(service: IndexService, components: ControllerComponents) extends AbstractController(components) with DefaultExecutionContext {
 
   /**
     * Switches indices.
