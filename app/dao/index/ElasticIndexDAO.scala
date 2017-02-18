@@ -1,4 +1,4 @@
-package models.index
+package dao.index
 
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -13,7 +13,7 @@ import play.api.libs.json.Json
   * Marco Ebert 21.05.16
   */
 @Singleton
-final class Index @Inject()(configuration: Configuration) {
+final class ElasticIndexDAO @Inject()(configuration: Configuration) extends IndexDAO {
 
   /**
     * Base name.
@@ -35,7 +35,7 @@ final class Index @Inject()(configuration: Configuration) {
     *
     * @return Unique name with timestamp.
     */
-  def name: String = {
+  override def name: String = {
     val sdf = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss")
     val timestamp = sdf format new Date
 
@@ -44,23 +44,31 @@ final class Index @Inject()(configuration: Configuration) {
 
   /**
     * Search alias.
+    *
+    * @return Search alias.
     */
-  val read = s"$Base-read"
+  override def read: String = s"$Base-read"
 
   /**
     * Index alias.
+    *
+    * @return Index alias.
     */
-  val write = s"$Base-write"
+  override def write: String = s"$Base-write"
 
   /**
     * Backup alias.
+    *
+    * @return Backup alias.
     */
-  val backup = s"$Base-backup"
+  override def backup: String = s"$Base-backup"
 
   /**
     * Index settings.
+    *
+    * @return Index settings.
     */
-  val settings: String = Json.stringify(
+  override def settings: String = Json.stringify(
     Json.obj(
       "index" -> Json.obj(
         "number_of_shards" -> Shards,
@@ -80,8 +88,10 @@ final class Index @Inject()(configuration: Configuration) {
 
   /**
     * Index mappings.
+    *
+    * @return Index mappings.
     */
-  val mappings = Map(
+  override def mappings: Map[String, String] = Map(
     Post.Type -> Post.Mapping
   )
 

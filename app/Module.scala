@@ -10,6 +10,8 @@ import akka.routing.BalancingPool
 import com.google.inject.AbstractModule
 import dao.comment.CommentDAO
 import dao.comment.ElasticCommentDAO
+import dao.index.ElasticIndexDAO
+import dao.index.IndexDAO
 import dao.info.InfoDAO
 import dao.info.RestInfoDAO
 import dao.item.ItemDAO
@@ -27,8 +29,8 @@ import play.api.Environment
 import play.api.Logger
 import play.api.inject.ApplicationLifecycle
 import play.api.libs.concurrent.AkkaGuiceSupport
-import services.ElasticIndexService
-import services.IndexService
+import services.index.ElasticIndexService
+import services.index.IndexService
 
 import scala.concurrent.Future
 import scala.reflect.ClassTag
@@ -128,6 +130,8 @@ final class Module(environment: Environment, configuration: Configuration) exten
     // Bind InfoDAO to RestInfoDAO.
     bind(classOf[InfoDAO]) to classOf[RestInfoDAO]
 
+    // Bind IndexDAO to ElasticIndexDAO.
+    bind(classOf[IndexDAO]) to classOf[ElasticIndexDAO]
     // Bind IndexService to ElasticIndexService.
     bind(classOf[IndexService]) to classOf[ElasticIndexService]
 

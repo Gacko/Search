@@ -1,9 +1,9 @@
-package services
+package services.index
 
 import javax.inject.Inject
 import javax.inject.Singleton
 
-import models.index.Index
+import dao.index.IndexDAO
 import org.elasticsearch.client.Client
 import play.api.Logger
 import util.Futures._
@@ -17,7 +17,7 @@ import scala.util.Success
   * Marco Ebert 10.10.16
   */
 @Singleton
-final class ElasticIndexService @Inject()(client: Client, index: Index) extends IndexService {
+final class ElasticIndexService @Inject()(client: Client, index: IndexDAO) extends IndexService {
 
   /**
     * Creates an index.

@@ -9,7 +9,7 @@ import play.api.libs.json.Json
 import play.api.mvc.Action
 import play.api.mvc.AnyContent
 import play.api.mvc.Controller
-import services.IndexService
+import services.index.IndexService
 
 /**
   * Marco Ebert 21.05.16

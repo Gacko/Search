@@ -3,7 +3,7 @@ package dao.post
 import javax.inject.Inject
 import javax.inject.Singleton
 
-import models.index.Index
+import dao.index.IndexDAO
 import models.post.Post
 import org.elasticsearch.action.index.IndexRequestBuilder
 import org.elasticsearch.action.search.SearchResponse
@@ -24,7 +24,7 @@ import scala.concurrent.Future
   * Marco Ebert 20.05.16
   */
 @Singleton
-final class ElasticPostDAO @Inject()(configuration: Configuration, client: Client, index: Index) extends PostDAO {
+final class ElasticPostDAO @Inject()(configuration: Configuration, client: Client, index: IndexDAO) extends PostDAO {
 
   /**
     * Maximum update retries.
