@@ -129,30 +129,47 @@ final class ElasticIndexService @Inject()(client: Client, index: IndexDAO) exten
   override def switch(implicit ec: ExecutionContext): Future[Boolean] = {
     // Get aliases.
     aliases flatMap { aliases =>
+      // Get read alias.
+      val readAlias = index.read
       // Get read index name.
-      val read = aliases get index.read
-      // Get write index name.
-      val write = aliases.get(index.write)
+      val readIndexOption = aliases get readAlias
 
-      write match {
-        // Write index exists but is not equal to read index.
-        case Some(w) if read != write =>
-          // Get backup index name.
-          val backup = aliases get index.backup
-          // Move backup alias to read index and remove if exists.
-          for {
-            r <- read if read != backup
-            _ <- setAlias(r, index.backup, backup)
-            b <- backup
-          } this delete b
-          // Set read alias to write index.
-          setAlias(w, index.read, read)
+      // Get write alias.
+      val writeAlias = index.write
+      // Get write index name.
+      val writeIndexOption = aliases get writeAlias
+
+      writeIndexOption match {
+        // Write index exists and is not equal to read index.
+        case Some(writeIndex) if writeIndexOption != readIndexOption =>
+          setAlias(writeIndex, readAlias, readIndexOption) andThen {
+            // Successfully set alias.
+            case Success(true) =>
+              // Get backup alias.
+              index.backup match {
+                // Backup alias exists.
+                case Some(backupAlias) =>
+                  // Get backup index name.
+                  val backupIndexOption = aliases get backupAlias
+                  // Move backup alias to read index and remove backup index.
+                  for {
+                    readIndex <- readIndexOption if readIndexOption != backupIndexOption
+                    setAlias <- setAlias(readIndex, backupAlias, backupIndexOption) if setAlias
+                    backupIndex <- backupIndexOption
+                  } this delete backupIndex
+                // Backup alias does not exist.
+                case None =>
+                  // Remove read index.
+                  readIndexOption foreach delete
+              }
+          }
+        // Write index does not exist or is equal to read index.
         case _ =>
           // Create index and set write alias.
           for {
-            name <- create
-            alias <- setAlias(name, index.write, write)
-          } yield alias
+            newIndex <- create
+            setAlias <- setAlias(newIndex, writeAlias, writeIndexOption)
+          } yield setAlias
       }
     }
   }
@@ -170,27 +187,37 @@ final class ElasticIndexService @Inject()(client: Client, index: IndexDAO) exten
   override def rollback(implicit ec: ExecutionContext): Future[Boolean] = {
     // Get aliases.
     aliases flatMap { aliases =>
+      // Get read alias.
+      val readAlias = index.read
       // Get read index name.
-      val read = aliases get index.read
-      // Get write index name.
-      val write = aliases get index.write
+      val readIndexOption = aliases get readAlias
 
-      read match {
-        // Read index exists but is not equal to write index.
-        case Some(r) if read != write =>
+      // Get write alias.
+      val writeAlias = index.write
+      // Get write index name.
+      val writeIndexOption = aliases get writeAlias
+
+      readIndexOption match {
+        // Read index exists and is not equal to write index.
+        case Some(readIndex) if readIndexOption != writeIndexOption =>
           // Set write alias to read index.
-          setAlias(r, index.write, write) andThen {
-            // Remove write index.
-            case Success(true) => write foreach delete
+          setAlias(readIndex, writeAlias, writeIndexOption) andThen {
+            // Successfully set alias.
+            case Success(true) =>
+              // Remove write index.
+              writeIndexOption foreach delete
           }
+        // Read index does not exist or is equal to write index.
         case _ =>
           // Get backup index name.
-          val backup = aliases get index.backup
-          backup match {
-            // Backup index exists but is not equal to read index.
-            case Some(b) if read != backup =>
+          val backupIndexOption = index.backup flatMap aliases.get
+
+          backupIndexOption match {
+            // Backup index exists and is not equal to read index.
+            case Some(backupIndex) if backupIndexOption != readIndexOption =>
               // Set read alias to backup index.
-              setAlias(b, index.read, read)
+              setAlias(backupIndex, readAlias, readIndexOption)
+            // Backup index does not exist or is equal to read index.
             case _ => Future successful false
           }
       }

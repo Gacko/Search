@@ -31,6 +31,11 @@ final class ElasticIndexDAO @Inject()(configuration: Configuration) extends Inde
   private val Replicas = configuration get[Int] "index.replicas"
 
   /**
+    * Backup enabled.
+    */
+  private val Backup: Boolean = configuration get[Boolean] "index.backup"
+
+  /**
     * Unique name with timestamp.
     *
     * @return Unique name with timestamp.
@@ -61,7 +66,7 @@ final class ElasticIndexDAO @Inject()(configuration: Configuration) extends Inde
     *
     * @return Backup alias.
     */
-  override def backup: String = s"$Base-backup"
+  override def backup: Option[String] = if (Backup) Some(s"$Base-backup") else None
 
   /**
     * Index settings.

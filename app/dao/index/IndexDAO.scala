@@ -31,7 +31,7 @@ trait IndexDAO {
     *
     * @return Backup alias.
     */
-  def backup: String
+  def backup: Option[String]
 
   /**
     * Index settings.
