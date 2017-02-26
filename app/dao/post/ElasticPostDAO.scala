@@ -232,7 +232,6 @@ final class ElasticPostDAO @Inject()(configuration: Configuration, client: Clien
             case _: VersionConflictEngineException =>
               Logger error s"ElasticPostDAO::update: Failed to update post $id due to conflicting versions. No more retries left."
               Future successful false
-            case e: Throwable => throw e
           }
         case None => Future successful false
       }
