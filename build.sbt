@@ -6,7 +6,7 @@ version := "1.0"
 
 lazy val root = project in file(".") enablePlugins PlayScala
 
-scalaVersion := "2.11.8"
+scalaVersion := "2.12.1"
 
 libraryDependencies ++= Seq(
   ws,
@@ -14,5 +14,5 @@ libraryDependencies ++= Seq(
   "org.elasticsearch.client" % "transport" % "5.2.1",
   "org.apache.logging.log4j" % "log4j-api" % "2.7",
   "org.apache.logging.log4j" % "log4j-to-slf4j" % "2.7",
-  "org.scalatestplus.play" %% "scalatestplus-play" % "1.5.1" % Test
+  "org.scalatestplus.play" %% "scalatestplus-play" % "2.0.0-M2" % Test
 )

@@ -6,7 +6,6 @@ import javax.inject.Singleton
 import dao.comment.CommentDAO
 import models.comment.Comment
 import play.api.libs.json.Json
-import play.api.mvc.AbstractController
 import play.api.mvc.Action
 import play.api.mvc.AnyContent
 import play.api.mvc.ControllerComponents
@@ -15,7 +14,7 @@ import play.api.mvc.ControllerComponents
   * Marco Ebert 20.05.16
   */
 @Singleton
-final class CommentController @Inject()(dao: CommentDAO, components: ControllerComponents) extends AbstractController(components) with DefaultExecutionContext {
+final class CommentController @Inject()(dao: CommentDAO, components: ControllerComponents) extends AbstractController(components) {
 
   /**
     * Indexes a comment for a post.

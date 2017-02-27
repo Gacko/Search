@@ -1,13 +1,13 @@
 package controllers
 
-import play.api.mvc.AbstractController
+import play.api.mvc.ControllerComponents
 
 import scala.concurrent.ExecutionContext
 
 /**
-  * Marco Ebert 18.02.17
+  * Marco Ebert 27.02.17
   */
-trait DefaultExecutionContext { this: AbstractController =>
+abstract class AbstractController(components: ControllerComponents) extends play.api.mvc.AbstractController(components) {
 
   /**
     * Implicitly provide default execution context from AbstractController.

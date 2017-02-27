@@ -8,7 +8,7 @@ import org.elasticsearch.client.Client
 import play.api.Logger
 import util.Futures._
 
-import scala.collection.JavaConversions._
+import scala.collection.JavaConverters._
 import scala.concurrent.ExecutionContext
 import scala.concurrent.Future
 import scala.util.Success
@@ -79,8 +79,8 @@ final class ElasticIndexService @Inject()(client: Client, index: IndexDAO) exten
     response map { response =>
       // Extract aliases.
       val pairs = for {
-        cursor <- response.getAliases
-        value <- cursor.value
+        cursor <- response.getAliases.asScala
+        value <- cursor.value.asScala
       } yield {
         value.alias -> cursor.key
       }
@@ -154,7 +154,7 @@ final class ElasticIndexService @Inject()(client: Client, index: IndexDAO) exten
                   // Move backup alias to read index and remove backup index.
                   for {
                     readIndex <- readIndexOption if readIndexOption != backupIndexOption
-                    setAlias <- setAlias(readIndex, backupAlias, backupIndexOption) if setAlias
+                    acknowledged <- setAlias(readIndex, backupAlias, backupIndexOption) if acknowledged
                     backupIndex <- backupIndexOption
                   } this delete backupIndex
                 // Backup alias does not exist.
@@ -168,8 +168,8 @@ final class ElasticIndexService @Inject()(client: Client, index: IndexDAO) exten
           // Create index and set write alias.
           for {
             newIndex <- create
-            setAlias <- setAlias(newIndex, writeAlias, writeIndexOption)
-          } yield setAlias
+            acknowledged <- setAlias(newIndex, writeAlias, writeIndexOption)
+          } yield acknowledged
       }
     }
   }

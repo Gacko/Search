@@ -6,7 +6,6 @@ import javax.inject.Singleton
 import dao.tag.TagDAO
 import models.tag.Tags
 import play.api.libs.json.Json
-import play.api.mvc.AbstractController
 import play.api.mvc.Action
 import play.api.mvc.AnyContent
 import play.api.mvc.ControllerComponents
@@ -15,7 +14,7 @@ import play.api.mvc.ControllerComponents
   * Marco Ebert 20.05.16
   */
 @Singleton
-final class TagController @Inject()(dao: TagDAO, components: ControllerComponents) extends AbstractController(components) with DefaultExecutionContext {
+final class TagController @Inject()(dao: TagDAO, components: ControllerComponents) extends AbstractController(components) {
 
   /**
     * Indexes tags for a post.

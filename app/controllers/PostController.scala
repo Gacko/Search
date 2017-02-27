@@ -7,7 +7,6 @@ import dao.post.PostDAO
 import models.post.Post
 import models.post.Posts
 import play.api.libs.json.Json
-import play.api.mvc.AbstractController
 import play.api.mvc.Action
 import play.api.mvc.AnyContent
 import play.api.mvc.ControllerComponents
@@ -16,7 +15,7 @@ import play.api.mvc.ControllerComponents
   * Marco Ebert 20.05.16
   */
 @Singleton
-final class PostController @Inject()(dao: PostDAO, components: ControllerComponents) extends AbstractController(components) with DefaultExecutionContext {
+final class PostController @Inject()(dao: PostDAO, components: ControllerComponents) extends AbstractController(components) {
 
   /**
     * Indexes a post.

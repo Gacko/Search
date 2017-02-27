@@ -1,4 +1,5 @@
 import java.net.InetAddress
+import java.net.URI
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -65,15 +66,20 @@ final class Module(environment: Environment, configuration: Configuration) exten
     // Build client.
     val client = new PreBuiltTransportClient(settings)
 
+    // Get nodes.
+    val nodes: Seq[String] = configuration get[Seq[String]] "cluster.nodes"
     // Add transport addresses.
-    for (node: String <- configuration get[Seq[String]] "cluster.nodes") {
-      // Parse node string.
-      val split = node.split(":", 2)
-      // Get host and port.
-      val host = split(0)
-      val port = split.length match {
-        case 1 => 9300
-        case 2 => split(1).toInt
+    for (node <- nodes) {
+      // Parse URI. Prepend fake scheme to make it valid.
+      val uri = new URI(s"elasticsearch://$node")
+      // Get host.
+      val host = uri.getHost
+      // Get port.
+      val port = uri.getPort match {
+        // No port specified, use default.
+        case -1 => 9300
+        // Port specified, use it.
+        case p => p
       }
 
       // Create transport address.

@@ -5,7 +5,6 @@ import javax.inject.Singleton
 
 import play.api.Logger
 import play.api.libs.json.Json
-import play.api.mvc.AbstractController
 import play.api.mvc.Action
 import play.api.mvc.AnyContent
 import play.api.mvc.ControllerComponents
@@ -15,7 +14,7 @@ import services.index.IndexService
   * Marco Ebert 21.05.16
   */
 @Singleton
-final class IndexController @Inject()(service: IndexService, components: ControllerComponents) extends AbstractController(components) with DefaultExecutionContext {
+final class IndexController @Inject()(service: IndexService, components: ControllerComponents) extends AbstractController(components) {
 
   /**
     * Switches indices.

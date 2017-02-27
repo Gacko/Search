@@ -10,7 +10,6 @@ import akka.pattern.ask
 import akka.util.Timeout
 import play.api.Logger
 import play.api.libs.json.Json
-import play.api.mvc.AbstractController
 import play.api.mvc.Action
 import play.api.mvc.AnyContent
 import play.api.mvc.ControllerComponents
@@ -21,7 +20,7 @@ import scala.concurrent.duration._
   * Marco Ebert 28.11.16
   */
 @Singleton
-final class CrawlerController @Inject()(@Named(Crawler.Name) crawler: ActorRef, components: ControllerComponents) extends AbstractController(components) with DefaultExecutionContext {
+final class CrawlerController @Inject()(@Named(Crawler.Name) crawler: ActorRef, components: ControllerComponents) extends AbstractController(components) {
 
   /**
     * Ask timeout.
