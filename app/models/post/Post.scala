@@ -5,6 +5,7 @@ import models.info.Info
 import models.item.Item
 import models.tag.Tag
 import play.api.libs.json.Format
+import play.api.libs.json.JsObject
 import play.api.libs.json.Json
 
 /**
@@ -122,60 +123,58 @@ object Post {
   /**
     * Type mapping.
     */
-  val Mapping: String = Json.stringify(
-    Json.obj(
-      "_all" -> Json.obj("enabled" -> false),
-      "properties" -> Json.obj(
-        ID -> Json.obj("type" -> "integer"),
-        Promoted -> Json.obj("type" -> "integer"),
-        Created -> Json.obj("type" -> "long"),
-        Image -> Json.obj(
-          "type" -> "text",
-          "analyzer" -> "path"
-        ),
-        Thumb -> Json.obj(
-          "type" -> "text",
-          "analyzer" -> "path"
-        ),
-        FullSize -> Json.obj(
-          "type" -> "text",
-          "analyzer" -> "path"
-        ),
-        Width -> Json.obj("type" -> "integer"),
-        Height -> Json.obj("type" -> "integer"),
-        Audio -> Json.obj("type" -> "boolean"),
-        Source -> Json.obj(
-          "type" -> "text",
-          "analyzer" -> "path"
-        ),
-        Flags -> Json.obj("type" -> "byte"),
-        User -> Json.obj("type" -> "keyword"),
-        Tags -> Json.obj(
-          "type" -> "nested",
-          "properties" -> Json.obj(
-            Tag.ID -> Json.obj("type" -> "integer"),
-            Tag.Tag -> Json.obj(
-              "type" -> "text",
-              "copy_to" -> FlatTags
-            )
+  val Mapping: JsObject = Json.obj(
+    "_all" -> Json.obj("enabled" -> false),
+    "properties" -> Json.obj(
+      ID -> Json.obj("type" -> "integer"),
+      Promoted -> Json.obj("type" -> "integer"),
+      Created -> Json.obj("type" -> "long"),
+      Image -> Json.obj(
+        "type" -> "text",
+        "analyzer" -> "path"
+      ),
+      Thumb -> Json.obj(
+        "type" -> "text",
+        "analyzer" -> "path"
+      ),
+      FullSize -> Json.obj(
+        "type" -> "text",
+        "analyzer" -> "path"
+      ),
+      Width -> Json.obj("type" -> "integer"),
+      Height -> Json.obj("type" -> "integer"),
+      Audio -> Json.obj("type" -> "boolean"),
+      Source -> Json.obj(
+        "type" -> "text",
+        "analyzer" -> "path"
+      ),
+      Flags -> Json.obj("type" -> "byte"),
+      User -> Json.obj("type" -> "keyword"),
+      Tags -> Json.obj(
+        "type" -> "nested",
+        "properties" -> Json.obj(
+          Tag.ID -> Json.obj("type" -> "integer"),
+          Tag.Tag -> Json.obj(
+            "type" -> "text",
+            "copy_to" -> FlatTags
           )
-        ),
-        FlatTags -> Json.obj("type" -> "text"),
-        Comments -> Json.obj(
-          "type" -> "nested",
-          "properties" -> Json.obj(
-            Comment.ID -> Json.obj("type" -> "integer"),
-            Comment.Parent -> Json.obj("type" -> "integer"),
-            Comment.Content -> Json.obj(
-              "type" -> "text",
-              "copy_to" -> FlatComments
-            ),
-            Comment.Created -> Json.obj("type" -> "long"),
-            Comment.Name -> Json.obj("type" -> "keyword")
-          )
-        ),
-        FlatComments -> Json.obj("type" -> "text")
-      )
+        )
+      ),
+      FlatTags -> Json.obj("type" -> "text"),
+      Comments -> Json.obj(
+        "type" -> "nested",
+        "properties" -> Json.obj(
+          Comment.ID -> Json.obj("type" -> "integer"),
+          Comment.Parent -> Json.obj("type" -> "integer"),
+          Comment.Content -> Json.obj(
+            "type" -> "text",
+            "copy_to" -> FlatComments
+          ),
+          Comment.Created -> Json.obj("type" -> "long"),
+          Comment.Name -> Json.obj("type" -> "keyword")
+        )
+      ),
+      FlatComments -> Json.obj("type" -> "text")
     )
   )
 

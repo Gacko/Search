@@ -1,5 +1,7 @@
 package dao.index
 
+import play.api.libs.json.JsObject
+
 /**
   * Marco Ebert 18.02.17
   */
@@ -38,13 +40,13 @@ trait IndexDAO {
     *
     * @return Index settings.
     */
-  def settings: String
+  def settings: JsObject
 
   /**
     * Index mappings.
     *
     * @return Index mappings.
     */
-  def mappings: Map[String, String]
+  def mappings: Map[String, JsObject]
 
 }

@@ -6,6 +6,7 @@ import javax.inject.Singleton
 import dao.index.IndexDAO
 import org.elasticsearch.client.Client
 import play.api.Logger
+import play.api.libs.json.Json
 import util.Futures._
 
 import scala.collection.JavaConverters._
@@ -30,17 +31,23 @@ final class ElasticIndexService @Inject()(client: Client, index: IndexDAO) exten
 
     // Prepare request.
     val request = client.admin.indices prepareCreate name
+    // Get settings.
+    val settings = Json stringify index.settings
     // Set settings.
-    request setSettings index.settings
-    // Add mappings.
-    for ((name, mapping) <- index.mappings) {
+    request setSettings settings
+
+    // Get mappings.
+    val mappings = index.mappings mapValues Json.stringify
+    // Iterate mappings.
+    for ((name, mapping) <- mappings) {
+      // Add mapping.
       request.addMapping(name, mapping)
     }
 
     // Execute request.
-    val response = request.execute
+    val responseFuture = request.execute
     // Handle response.
-    response map { _ =>
+    for (_ <- responseFuture) yield {
       Logger info s"ElasticIndexService::create: Created index '$name'."
       // Return name.
       name
@@ -57,9 +64,9 @@ final class ElasticIndexService @Inject()(client: Client, index: IndexDAO) exten
     // Prepare request.
     val request = client.admin.indices prepareDelete name
     // Execute request.
-    val response = request.execute
+    val responseFuture = request.execute
     // Handle response.
-    response map { response =>
+    for (response <- responseFuture) yield {
       Logger info s"ElasticIndexService::delete: Deleted index '$name'."
       response.isAcknowledged
     }
@@ -74,9 +81,9 @@ final class ElasticIndexService @Inject()(client: Client, index: IndexDAO) exten
     // Prepare request.
     val request = client.admin.indices.prepareGetAliases()
     // Execute request.
-    val response = request.execute
+    val responseFuture = request.execute
     // Handle response.
-    response map { response =>
+    for (response <- responseFuture) yield {
       // Extract aliases.
       val pairs = for {
         cursor <- response.getAliases.asScala
@@ -107,9 +114,9 @@ final class ElasticIndexService @Inject()(client: Client, index: IndexDAO) exten
     request.addAlias(name, alias)
 
     // Execute request.
-    val response = request.execute
+    val responseFuture = request.execute
     // Handle response.
-    response map { response =>
+    for (response <- responseFuture) yield {
       Logger info s"ElasticIndexService::setAlias: Set alias '$alias' to index '$name'."
       response.isAcknowledged
     }
