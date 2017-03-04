@@ -31,7 +31,9 @@ final class RestInfoDAO @Inject()(configuration: Configuration, ws: WSClient) ex
     // Prepare URL and build request with parameter.
     val request = ws url URL withQueryString "itemId" -> id.toString
     // Execute request.
-    request.get map { response =>
+    val responseFuture = request.get
+    // Handle response.
+    for (response <- responseFuture) yield {
       // Extract info from response.
       response.json.validate[Info].get
     }

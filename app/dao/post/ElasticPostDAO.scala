@@ -52,17 +52,17 @@ final class ElasticPostDAO @Inject()(configuration: Configuration, client: Clien
     // Create request.
     val request = client.prepareGet(index.read, Post.Type, id.toString)
     // Execute request.
-    val response = request.execute
+    val responseFuture = request.execute
     // Handle response.
-    response map {
+    responseFuture map {
       // Post exists.
-      case r if r.isExists =>
+      case response if response.isExists =>
         // Parse JSON.
-        val json = Json parse r.getSourceAsBytes
+        val json = Json parse response.getSourceAsBytes
         // Validate post.
         val post = json.validate[Post].get
         // Get document version.
-        val version = r.getVersion
+        val version = response.getVersion
         // Return post and version as tuple.
         Some((post, version))
       case _ => None
@@ -75,7 +75,7 @@ final class ElasticPostDAO @Inject()(configuration: Configuration, client: Clien
     * @param post Post to index.
     * @return Index request for the post.
     */
-  private def request(post: Post): IndexRequestBuilder = {
+  private def indexRequest(post: Post): IndexRequestBuilder = {
     // Get post ID as string.
     val id = post.id.toString
     // Convert post into JSON.
@@ -84,6 +84,21 @@ final class ElasticPostDAO @Inject()(configuration: Configuration, client: Clien
     val source = Json stringify json
     // Build request, set source and return it.
     client.prepareIndex(index.write, Post.Type, id) setSource source
+  }
+
+  /**
+    * Indexes a post.
+    *
+    * @param post Post to index.
+    * @return If the post has been indexed.
+    */
+  override def index(post: Post)(implicit ec: ExecutionContext): Future[Boolean] = {
+    // Build request.
+    val request = indexRequest(post)
+    // Execute request.
+    val responseFuture = request.execute
+    // Handle response.
+    for (response <- responseFuture) yield response.getId == post.id.toString
   }
 
   /**
@@ -96,13 +111,35 @@ final class ElasticPostDAO @Inject()(configuration: Configuration, client: Clien
   @throws[VersionConflictEngineException]
   private def index(post: Post, version: Long)(implicit ec: ExecutionContext): Future[Boolean] = {
     // Build request.
-    val request = this request post
+    val request = indexRequest(post)
     // Set version.
     request setVersion version
     // Execute request.
-    val response = request.execute
+    val responseFuture = request.execute
     // Handle response.
-    response map { response => response.getId == post.id.toString }
+    for (response <- responseFuture) yield response.getId == post.id.toString
+  }
+
+  /**
+    * Indexes multiple posts.
+    *
+    * @param posts Posts to index.
+    * @return If the posts have been indexed.
+    */
+  override def index(posts: Seq[Post])(implicit ec: ExecutionContext): Future[Boolean] = {
+    // Create request.
+    val bulk = client.prepareBulk
+    // Add a index request for every post.
+    for (post <- posts) {
+      // Build index request.
+      val request = indexRequest(post)
+      // Add index request to bulk request.
+      bulk add request
+    }
+    // Execute request.
+    val responseFuture = bulk.execute
+    // Handle response.
+    for (response <- responseFuture) yield !response.hasFailures
   }
 
   /**
@@ -121,43 +158,6 @@ final class ElasticPostDAO @Inject()(configuration: Configuration, client: Clien
       // Validate post.
       json.validate[Post].get
     }
-  }
-
-  /**
-    * Indexes a post.
-    *
-    * @param post Post to index.
-    * @return If the post has been indexed.
-    */
-  override def index(post: Post)(implicit ec: ExecutionContext): Future[Boolean] = {
-    // Build request.
-    val request = this request post
-    // Execute request.
-    val response = request.execute
-    // Handle response.
-    response map { response => response.getId == post.id.toString }
-  }
-
-  /**
-    * Indexes multiple posts.
-    *
-    * @param posts Posts to index.
-    * @return If the posts have been indexed.
-    */
-  override def index(posts: Seq[Post])(implicit ec: ExecutionContext): Future[Boolean] = {
-    // Create request.
-    val bulk = client.prepareBulk
-    // Add a index request for every post.
-    for (post <- posts) {
-      // Build index request.
-      val request = this request post
-      // Add index request to bulk request.
-      bulk add request
-    }
-    // Execute request.
-    val response = bulk.execute
-    // Handle response.
-    response map { response => !response.hasFailures }
   }
 
   /**
@@ -223,21 +223,34 @@ final class ElasticPostDAO @Inject()(configuration: Configuration, client: Clien
     * @return If a post has been found and updated.
     */
   override def update(id: Int)(f: Post => Post)(implicit ec: ExecutionContext): Future[Boolean] = {
-    def update(id: Int, retries: Int)(f: Post => Post): Future[Boolean] = {
-      this get id flatMap {
+    /**
+      * Internal update with retry on version conflict.
+      *
+      * @param retries Retries.
+      * @return Updated.
+      */
+    def update(retries: Int): Future[Boolean] = {
+      get(id) flatMap {
+        // Found.
         case Some((post, version)) =>
+          // Update post.
           val updated = f(post)
+          // Index updated post.
           index(updated, version) recoverWith {
-            case _: VersionConflictEngineException if retries > 0 => update(id, retries - 1)(f)
+            // Version conflict, retries left.
+            case _: VersionConflictEngineException if retries > 0 => update(retries - 1)
+            // Version conflict, no retries left.
             case _: VersionConflictEngineException =>
               Logger error s"ElasticPostDAO::update: Failed to update post $id due to conflicting versions. No more retries left."
               Future successful false
           }
+        // Not found.
         case None => Future successful false
       }
     }
 
-    update(id, Retries)(f)
+    // Update with retries.
+    update(Retries)
   }
 
   /**
@@ -250,9 +263,9 @@ final class ElasticPostDAO @Inject()(configuration: Configuration, client: Clien
     // Create request.
     val request = client.prepareDelete(index.write, Post.Type, id.toString)
     // Execute request.
-    val response = request.execute
+    val responseFuture = request.execute
     // Handle response.
-    response map { response => response.getResult == Result.DELETED }
+    for (response <- responseFuture) yield response.getResult == Result.DELETED
   }
 
 }

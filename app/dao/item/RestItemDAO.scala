@@ -46,7 +46,9 @@ final class RestItemDAO @Inject()(configuration: Configuration, ws: WSClient) ex
     }
 
     // Execute request.
-    request.get map { response =>
+    val responseFuture = request.get
+    // Handle response.
+    for (response <- responseFuture) yield {
       // Extract items from response.
       response.json.validate[Items].get
     }
