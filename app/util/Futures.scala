@@ -24,23 +24,7 @@ object Futures {
     val promise = Promise[T]()
 
     // Add action listener.
-    actionFuture addListener new ActionListener[T] {
-
-      /**
-        * Fulfill promise on success.
-        *
-        * @param response Response.
-        */
-      override def onResponse(response: T): Unit = promise success response
-
-      /**
-        * Fail promise on exception.
-        *
-        * @param exception Exception.
-        */
-      override def onFailure(exception: Exception): Unit = promise failure exception
-
-    }
+    actionFuture addListener ActionListener.wrap(promise.success, promise.failure)
 
     // Return promise as Future.
     promise.future
