@@ -14,5 +14,5 @@ libraryDependencies ++= Seq(
   "org.elasticsearch.client" % "transport" % "5.2.2",
   "org.apache.logging.log4j" % "log4j-api" % "2.7",
   "org.apache.logging.log4j" % "log4j-to-slf4j" % "2.7",
-  "org.scalatestplus.play" %% "scalatestplus-play" % "3.0.0-M1" % Test
+  "org.scalatestplus.play" %% "scalatestplus-play" % "3.0.0-M2" % Test
 )
