@@ -9,6 +9,7 @@ import org.elasticsearch.action.DocWriteResponse.Result
 import org.elasticsearch.action.index.IndexRequestBuilder
 import org.elasticsearch.action.search.SearchResponse
 import org.elasticsearch.client.Client
+import org.elasticsearch.common.xcontent.XContentType
 import org.elasticsearch.index.engine.VersionConflictEngineException
 import org.elasticsearch.index.query.Operator
 import org.elasticsearch.index.query.QueryBuilders
@@ -81,9 +82,9 @@ final class ElasticPostDAO @Inject()(configuration: Configuration, client: Clien
     // Convert post into JSON.
     val json = Json toJson post
     // Get JSON as string.
-    val source = Json stringify json
+    val source = Json toBytes json
     // Build request, set source and return it.
-    client.prepareIndex(index.write, Post.Type, id) setSource source
+    client.prepareIndex(index.write, Post.Type, id).setSource(source, XContentType.JSON)
   }
 
   /**

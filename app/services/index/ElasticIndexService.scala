@@ -5,6 +5,7 @@ import javax.inject.Singleton
 
 import dao.index.IndexDAO
 import org.elasticsearch.client.Client
+import org.elasticsearch.common.xcontent.XContentType
 import play.api.Logger
 import play.api.libs.json.Json
 import util.Futures._
@@ -34,14 +35,14 @@ final class ElasticIndexService @Inject()(client: Client, index: IndexDAO) exten
     // Get settings.
     val settings = Json stringify index.settings
     // Set settings.
-    request setSettings settings
+    request.setSettings(settings, XContentType.JSON)
 
     // Get mappings.
     val mappings = index.mappings mapValues Json.stringify
     // Iterate mappings.
     for ((name, mapping) <- mappings) {
       // Add mapping.
-      request.addMapping(name, mapping)
+      request.addMapping(name, mapping, XContentType.JSON)
     }
 
     // Execute request.
