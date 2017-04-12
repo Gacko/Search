@@ -13,19 +13,22 @@ import play.api.Environment
 import play.api.Logger
 import play.api.inject.ApplicationLifecycle
 
+import scala.concurrent.ExecutionContext
 import scala.concurrent.Future
 
 /**
   * Marco Ebert 04.03.17
   */
 @Singleton
-sealed class Disconnect @Inject()(lifecycle: ApplicationLifecycle, client: Client) {
+sealed class Disconnect @Inject()(lifecycle: ApplicationLifecycle, client: Client)(implicit ec: ExecutionContext) {
 
   /**
     * Close Elasticsearch connection on application stop.
     */
   lifecycle addStopHook { () =>
-    Future successful client.close
+    Future {
+      client.close()
+    }
   }
 
 }
