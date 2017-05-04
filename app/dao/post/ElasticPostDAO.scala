@@ -151,9 +151,9 @@ final class ElasticPostDAO @Inject()(configuration: Configuration, client: Clien
     */
   private def posts(response: SearchResponse): Seq[Post] = {
     // Parse hits into posts.
-    for (hit <- response.getHits.hits) yield {
+    for (hit <- response.getHits.getHits) yield {
       // Get source from hit.
-      val source = hit.source
+      val source = hit.getSourceAsString
       // Parse JSON from source.
       val json = Json parse source
       // Validate post.
