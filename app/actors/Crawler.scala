@@ -118,10 +118,8 @@ final class Crawler @Inject()(
           self ! Crawler.Crawl(0)
         case Failure(_) =>
           Logger warn s"Crawler::crawl: Failed to find items newer than $newer."
-          // Wait.
-          Thread sleep 1000
-          // Retry.
-          self ! Crawler.Crawl(newer)
+          // Retry after 1 second.
+          context.system.scheduler.scheduleOnce(1.second, self, Crawler.Crawl(newer))
       }
     // Already crawling.
     case Crawler.Start(_) =>
