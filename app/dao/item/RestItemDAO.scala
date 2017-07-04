@@ -42,7 +42,7 @@ final class RestItemDAO @Inject()(configuration: Configuration, ws: WSClient) ex
       promoted map { p => "promoted" -> (if (p) "1" else "0") }
     ).flatten match {
       case Nil => url
-      case parameters => url withQueryString (parameters: _*)
+      case parameters => url withQueryStringParameters (parameters: _*)
     }
 
     // Execute request.
